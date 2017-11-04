@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
@@ -57,13 +58,13 @@ public final class RawApiData {
 		}
 	}
 
-	//	@Override
-	//	public String toString() {
-	//		return (this.type == null ? "null" : String.format("%s,%s", this.type, this.type.getDetail())) + "\r\n"//
-	//				+ this.getUrl() + "\r\n"//
-	//				+ new HashMap<>(this.fields) + "\r\n" //
-	//				+ this.json;
-	//	}
+	@Override
+	public String toString() {
+		return (this.type == null ? "null" : String.format("%s,%s", this.type, this.type.getDetail())) + "\r\n"//
+				+ this.getUrl() + "\r\n"//
+				+ new HashMap<>(this.fields) + "\r\n" //
+				+ this.json;
+	}
 
 	public RawApiDataType getType() {
 		return this.type;
