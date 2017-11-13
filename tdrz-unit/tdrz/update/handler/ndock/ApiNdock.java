@@ -8,10 +8,10 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import tdrz.update.UnitHandler;
-import tdrz.update.UnitManager;
 import tdrz.update.data.word.WordNdock;
-import tdrz.update.part.NdockUnit.NdockUpdate;
+import tdrz.update.handler.UnitHandler;
+import tdrz.update.unit.UnitManager;
+import tdrz.update.unit.main.NdockUnit.NdockUpdate;
 
 public class ApiNdock extends UnitHandler {
 	private final List<NdockUpdate> ndockUpdates;

@@ -4,10 +4,10 @@ import java.util.Map;
 
 import javax.json.JsonValue;
 
-import tdrz.update.UnitHandler;
-import tdrz.update.UnitManager;
-import tdrz.update.part.DeckUnit.DeckChange;
-import tdrz.update.part.other.AkashiUnit.ResetAkashiFlagshipWhenChange;
+import tdrz.update.handler.UnitHandler;
+import tdrz.update.unit.UnitManager;
+import tdrz.update.unit.main.DeckUnit.DeckChange;
+import tdrz.update.unit.other.AkashiUnit.ResetAkashiFlagshipWhenChange;
 
 public class ApiDeckChange extends UnitHandler {
 	private final DeckChange deckChange;

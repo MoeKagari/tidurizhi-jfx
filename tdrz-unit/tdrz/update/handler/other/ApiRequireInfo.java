@@ -7,9 +7,9 @@ import java.util.Map;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import tdrz.update.UnitHandler;
-import tdrz.update.UnitManager;
+import tdrz.update.handler.UnitHandler;
 import tdrz.update.handler.kdock.ApiKdock;
+import tdrz.update.unit.UnitManager;
 
 public class ApiRequireInfo extends UnitHandler {
 	private final UnitHandler slotitem, useitem, kdock;

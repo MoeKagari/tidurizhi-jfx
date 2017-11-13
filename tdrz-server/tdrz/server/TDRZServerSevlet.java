@@ -23,6 +23,7 @@ import server.ServerConfig;
 import tool.Downloader;
 import tool.function.FunctionUtils;
 
+@SuppressWarnings("serial")
 public class TDRZServerSevlet extends ProxyServerServlet {
 	private final static Logger LOG = LogManager.getLogger(TDRZServerSevlet.class);
 	/** 游戏现有的服务器 */

@@ -3,10 +3,10 @@ package tdrz.core.logic;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 
-import tdrz.update.UnitManager;
 import tdrz.update.data.word.WordDeck;
 import tdrz.update.data.word.WordShip;
 import tdrz.update.data.word.WordSlotItem;
+import tdrz.update.unit.UnitManager;
 
 public class DeckBuilder {
 	private final UnitManager unitManager;

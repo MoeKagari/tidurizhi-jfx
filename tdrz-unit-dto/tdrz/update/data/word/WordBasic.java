@@ -16,6 +16,11 @@ public class WordBasic extends AbstractWord {
 		this.json = json;
 	}
 
+	/** 甲章个数 */
+	public int getMedalNumber() {
+		return this.json.getInt("api_medals");
+	}
+
 	public String getUserName() {
 		return this.json.getString("api_nickname");
 	}

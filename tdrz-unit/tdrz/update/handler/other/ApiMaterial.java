@@ -7,10 +7,10 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import tdrz.update.UnitHandler;
-import tdrz.update.UnitManager;
-import tdrz.update.part.other.MaterialUnit.MaterialChangeHodler;
-import tdrz.update.part.other.MaterialUnit.MaterialChangeHodler.MaterialChangeOption;
+import tdrz.update.handler.UnitHandler;
+import tdrz.update.unit.UnitManager;
+import tdrz.update.unit.other.MaterialUnit.MaterialChangeHodler;
+import tdrz.update.unit.other.MaterialUnit.MaterialChangeHodler.MaterialChangeOption;
 
 public class ApiMaterial extends UnitHandler {
 	private final MaterialChangeHodler mch;

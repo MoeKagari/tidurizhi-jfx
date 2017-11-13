@@ -5,9 +5,9 @@ import java.util.Map;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import tdrz.update.UnitHandler;
-import tdrz.update.UnitManager;
-import tdrz.update.part.other.SlotItemUnit.SlotItemLock;
+import tdrz.update.handler.UnitHandler;
+import tdrz.update.unit.UnitManager;
+import tdrz.update.unit.other.SlotItemUnit.SlotItemLock;
 
 public class ApiKaisouSlotItemLock extends UnitHandler {
 	private final SlotItemLock lock;

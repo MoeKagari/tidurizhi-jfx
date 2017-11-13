@@ -8,10 +8,10 @@ import java.util.stream.Collectors;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import tdrz.update.UnitHandler;
-import tdrz.update.UnitManager;
 import tdrz.update.data.word.WordShip;
+import tdrz.update.handler.UnitHandler;
 import tdrz.update.handler.deck.ApiDeck;
+import tdrz.update.unit.UnitManager;
 import tool.function.FunctionUtils;
 
 public class ApiShip2 extends UnitHandler {

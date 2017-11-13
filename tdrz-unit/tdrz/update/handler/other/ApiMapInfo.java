@@ -5,10 +5,10 @@ import java.util.Map;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import tdrz.update.UnitHandler;
-import tdrz.update.UnitManager;
 import tdrz.update.data.word.WordAirbase;
 import tdrz.update.data.word.WordMapinfo;
+import tdrz.update.handler.UnitHandler;
+import tdrz.update.unit.UnitManager;
 
 public class ApiMapInfo extends UnitHandler {
 	private final WordAirbase airBase;

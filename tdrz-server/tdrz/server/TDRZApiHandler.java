@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import server.CommunicationHandler;
-import tdrz.update.UnitManagerThread;
+import tdrz.update.unit.UnitManager;
 
 public class TDRZApiHandler extends CommunicationHandler {
 	private final long time = System.currentTimeMillis();
@@ -19,7 +19,7 @@ public class TDRZApiHandler extends CommunicationHandler {
 
 	@Override
 	public void onSuccess(HttpServletRequest httpRequest, HttpServletResponse httpResponse, Map<String, String> headers, ByteArrayOutputStream requestBody, ByteArrayOutputStream responseBody) throws IOException {
-		Thread processDataThread = new UnitManagerThread(this.time, this.serverName, this.uri, headers, requestBody, responseBody);
+		Thread processDataThread = UnitManager.getUnitManager().newProcessDataThread(this.time, this.serverName, this.uri, headers, requestBody, responseBody);
 		//processDataThread.setDaemon(false);
 		processDataThread.start();
 	}

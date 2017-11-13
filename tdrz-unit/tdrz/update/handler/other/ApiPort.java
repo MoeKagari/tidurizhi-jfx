@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import tdrz.update.UnitHandler;
-import tdrz.update.UnitManager;
 import tdrz.update.data.word.WordShip;
+import tdrz.update.handler.UnitHandler;
 import tdrz.update.handler.deck.ApiDeck;
 import tdrz.update.handler.ndock.ApiNdock;
+import tdrz.update.unit.UnitManager;
 
 public class ApiPort extends UnitHandler {
 	private final UnitHandler basic, material, ndock, deck;
@@ -26,8 +26,8 @@ public class ApiPort extends UnitHandler {
 
 		this.basic = new ApiBasic(unitManager, time, fields, json.get("api_basic"));
 		this.material = new ApiMaterial(unitManager, time, fields, json.get("api_material"));
-		this.ndock = new ApiNdock(unitManager, time, fields, json.get("api_basic"));
-		this.deck = new ApiDeck(unitManager, time, fields, json.get("api_material"));
+		this.ndock = new ApiNdock(unitManager, time, fields, json.get("api_ndock"));
+		this.deck = new ApiDeck(unitManager, time, fields, json.get("api_deck_port"));
 
 		this.ships = json.getJsonArray("api_ship").getValuesAs(JsonObject.class).stream().map(WordShip::new).collect(Collectors.toCollection(LinkedList::new));
 		if (json.containsKey("api_combined_flag")) {

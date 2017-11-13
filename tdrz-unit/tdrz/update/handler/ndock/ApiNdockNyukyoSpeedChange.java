@@ -4,9 +4,9 @@ import java.util.Map;
 
 import javax.json.JsonValue;
 
-import tdrz.update.UnitHandler;
-import tdrz.update.UnitManager;
-import tdrz.update.part.NdockUnit.NdockNyukyoSpeedChange;
+import tdrz.update.handler.UnitHandler;
+import tdrz.update.unit.UnitManager;
+import tdrz.update.unit.main.NdockUnit.NdockNyukyoSpeedChange;
 
 public class ApiNdockNyukyoSpeedChange extends UnitHandler {
 	private final NdockNyukyoSpeedChange nnsc;

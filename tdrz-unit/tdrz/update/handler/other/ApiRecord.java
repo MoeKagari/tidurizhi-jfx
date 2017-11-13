@@ -5,9 +5,9 @@ import java.util.Map;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import tdrz.update.UnitHandler;
-import tdrz.update.UnitManager;
 import tdrz.update.data.word.WordRecord;
+import tdrz.update.handler.UnitHandler;
+import tdrz.update.unit.UnitManager;
 
 public class ApiRecord extends UnitHandler {
 	private final WordRecord record;

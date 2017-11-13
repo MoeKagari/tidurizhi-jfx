@@ -3,12 +3,12 @@ package tdrz.core.translator;
 import java.util.Map;
 import java.util.function.Function;
 
-import tdrz.update.UnitManager;
 import tdrz.update.data.word.WordMasterData;
 import tdrz.update.data.word.WordMasterData.WordMasterMission;
 import tdrz.update.data.word.WordMasterData.WordMasterShip;
 import tdrz.update.data.word.WordMasterData.WordMasterSlotitem;
 import tdrz.update.data.word.WordMasterData.WordMasterUserItem;
+import tdrz.update.unit.UnitManager;
 import tool.function.FunctionUtils;
 
 public class MasterDataTranslator {

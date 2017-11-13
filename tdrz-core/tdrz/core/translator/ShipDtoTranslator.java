@@ -9,13 +9,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import tdrz.core.logic.HPMessage;
 import tdrz.core.util.AppConstants;
-import tdrz.update.UnitManager;
 import tdrz.update.data.word.WordShip;
 import tdrz.update.data.word.WordSlotItem;
 import tdrz.update.data.word.WordMasterData.WordMasterShip;
 import tdrz.update.data.word.WordMasterData.WordMasterSlotitem;
-import tdrz.update.part.DeckUnit.DeckHolder;
-import tdrz.update.part.NdockUnit.NdockHodler;
+import tdrz.update.unit.UnitManager;
+import tdrz.update.unit.main.DeckUnit.DeckHolder;
+import tdrz.update.unit.main.NdockUnit.NdockHodler;
 import tool.function.FunctionUtils;
 
 /** 全部方法 ship==null 可 */

@@ -5,10 +5,10 @@ import java.util.Map;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import tdrz.update.UnitHandler;
-import tdrz.update.UnitManager;
 import tdrz.update.data.word.WordDeck;
-import tdrz.update.part.DeckUnit.DeckPresetSelect;
+import tdrz.update.handler.UnitHandler;
+import tdrz.update.unit.UnitManager;
+import tdrz.update.unit.main.DeckUnit.DeckPresetSelect;
 
 public class ApiDeckPresetSelect extends UnitHandler {
 	private final DeckPresetSelect deckPresetSelect;

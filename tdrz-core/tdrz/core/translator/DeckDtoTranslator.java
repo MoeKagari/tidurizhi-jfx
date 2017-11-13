@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import tdrz.update.UnitManager;
 import tdrz.update.data.word.WordDeck;
 import tdrz.update.data.word.WordShip;
+import tdrz.update.unit.UnitManager;
 import tool.function.FunctionUtils;
 
 public class DeckDtoTranslator {

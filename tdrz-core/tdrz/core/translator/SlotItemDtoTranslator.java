@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import tdrz.core.translator.SlotItemDtoTranslator.ItemDataMap.ItemData;
-import tdrz.update.UnitManager;
 import tdrz.update.data.word.WordSlotItem;
 import tdrz.update.data.word.WordMasterData.WordMasterSlotitem;
+import tdrz.update.unit.UnitManager;
 import tool.function.FunctionUtils;
 
 public class SlotItemDtoTranslator {

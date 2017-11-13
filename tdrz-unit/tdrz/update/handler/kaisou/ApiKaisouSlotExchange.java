@@ -6,9 +6,9 @@ import javax.json.JsonObject;
 import javax.json.JsonValue;
 
 import tdrz.core.util.JsonUtils;
-import tdrz.update.UnitHandler;
-import tdrz.update.UnitManager;
-import tdrz.update.part.other.ShipUnit.SlotExchange;
+import tdrz.update.handler.UnitHandler;
+import tdrz.update.unit.UnitManager;
+import tdrz.update.unit.other.ShipUnit.SlotExchange;
 
 public class ApiKaisouSlotExchange extends UnitHandler {
 	private final SlotExchange se;

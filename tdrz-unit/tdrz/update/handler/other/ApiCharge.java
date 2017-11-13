@@ -8,11 +8,11 @@ import javax.json.JsonObject;
 import javax.json.JsonValue;
 
 import tdrz.core.util.JsonUtils;
-import tdrz.update.UnitHandler;
-import tdrz.update.UnitManager;
-import tdrz.update.part.other.MaterialUnit.MaterialChangeHodler;
-import tdrz.update.part.other.MaterialUnit.MaterialChangeHodler.MaterialChangeOption;
-import tdrz.update.part.other.ShipUnit.Charge;
+import tdrz.update.handler.UnitHandler;
+import tdrz.update.unit.UnitManager;
+import tdrz.update.unit.other.MaterialUnit.MaterialChangeHodler;
+import tdrz.update.unit.other.MaterialUnit.MaterialChangeHodler.MaterialChangeOption;
+import tdrz.update.unit.other.ShipUnit.Charge;
 
 public class ApiCharge extends UnitHandler {
 	private final List<Charge> charges;

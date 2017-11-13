@@ -5,9 +5,9 @@ import java.util.Map;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import tdrz.update.UnitHandler;
-import tdrz.update.UnitManager;
-import tdrz.update.part.other.ShipUnit.DeckShipLock;
+import tdrz.update.handler.UnitHandler;
+import tdrz.update.unit.UnitManager;
+import tdrz.update.unit.other.ShipUnit.DeckShipLock;
 
 public class ApiDeckShipLock extends UnitHandler {
 	private final DeckShipLock shipLock;
