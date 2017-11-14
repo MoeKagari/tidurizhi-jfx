@@ -14,8 +14,6 @@ import tool.function.FunctionUtils;
 
 public class PartPractice extends TableView<PartPractice.CalcuPracticeExpData> implements ApplicationMainPart {
 	public PartPractice(UnitManager unitManager, Stage primaryStage) {
-		FXUtils.setMinMaxSize(this, 400, 120);
-
 		FXUtils.addNewColumn(this, "", FXUtils.getStringTableCellFactory(), rd -> rd.fm.name);
 		FunctionUtils.stream(Eval.values()).forEach(eval -> {
 			FXUtils.addNewColumn(this, eval.name, FXUtils.getIntegerTableCellFactory(), rd -> rd.calcu(eval));

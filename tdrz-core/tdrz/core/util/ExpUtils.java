@@ -42,6 +42,11 @@ public class ExpUtils {
 			this.value = value;
 			this.valueP = valueP;
 		}
+
+		@Override
+		public String toString() {
+			return this.name;
+		}
 	}
 
 	public static class ShipExp {

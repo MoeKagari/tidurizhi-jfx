@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -36,51 +35,38 @@ import tdrz.core.util.ExpUtils.Eval;
 import tdrz.core.util.ExpUtils.SeaExp;
 import tdrz.core.util.ExpUtils.ShipExp;
 import tdrz.update.data.word.WordMasterData.WordMasterShip;
-import tdrz.update.unit.UnitManager;
 import tdrz.update.data.word.WordShip;
+import tdrz.update.unit.UnitManager;
 import tool.FXUtils;
 import tool.function.FunctionUtils;
 
 public class ViceCalculator extends ViceWindowBase {
-	private final LeftOptionBox left;
-	private final RightTable right;
+	private final LeftOptionBox left = FunctionUtils.use(new LeftOptionBox(), box -> {
+		HBox.setHgrow(box, Priority.ALWAYS);
+	});
+	private final RightTable right = FunctionUtils.use(new RightTable(), table -> {
+		FXUtils.setMinMaxWidth(table, 240);
+	});
 
 	public ViceCalculator(UnitManager unitManager, Stage primaryStage) {
 		super(unitManager, "计算器");
-
-		this.right = new RightTable();
-		HBox.setHgrow(this.right, Priority.ALWAYS);
-
-		this.left = new LeftOptionBox();
-		FXUtils.setMinMaxWidth(this.left, 240);
-
 		this.setScene(new Scene(new HBox(this.left, this.right), 1100, 600));
 	}
 
 	private void update() {
-		LeftOptionBox.AbstractDataBox selected = this.left.getSelectedBox();
-		this.right.setItems(FXCollections.observableList(
-				IntStream.rangeClosed(selected.getCurrentLevel(), selected.getMaxLevel())//
-						.mapToObj(targetLevel -> new CalcuExpData(selected.getCurrentLevel(), selected.getCurrentExp(), targetLevel))//
-						.collect(Collectors.toList())
-		/**/));
-	}
-
-	private int calcuBaseExp(int seaExp) {
-		double exp = seaExp;
-
-		if (this.left.flagship.isSelected()) exp *= 1.5;
-		if (this.left.mvp.isSelected()) exp *= 2;
-		exp *= Eval.EVALMAP.get(this.left.eval.getSelectionModel().getSelectedItem().name).value;
-
-		return (int) Math.floor(exp);
+		this.right.updateTable(this.left.getSelectedBox());
 	}
 
 	private class LeftOptionBox extends VBox {
 		private final CheckBox flagship, mvp;
 		private final ComboBox<Eval> eval;
-		private final Label gaizhaoLevel;
-		private final VBox shipListBox;
+		private final Label gaizhaoLevel = FXUtils.createNewLabel("", label -> {
+			HBox.setHgrow(label, Priority.ALWAYS);
+			label.setTextAlignment(TextAlignment.LEFT);
+		});
+		private final VBox shipListBox = FXUtils.createVBox(0, Pos.CENTER, false, box -> {
+			VBox.setVgrow(box, Priority.ALWAYS);
+		});
 		private final DefaultDataBox defaultShip;
 
 		public LeftOptionBox() {
@@ -102,13 +88,6 @@ public class ViceCalculator extends ViceWindowBase {
 			this.eval.getItems().addAll(Eval.values());
 			this.eval.getSelectionModel().select(Eval.S);
 			this.eval.setOnAction(ev -> ViceCalculator.this.update());
-
-			this.gaizhaoLevel = new Label();
-			HBox.setHgrow(this.gaizhaoLevel, Priority.ALWAYS);
-			this.gaizhaoLevel.setTextAlignment(TextAlignment.LEFT);
-
-			this.shipListBox = new VBox();
-			VBox.setVgrow(this.shipListBox, Priority.ALWAYS);
 
 			this.defaultShip = new DefaultDataBox();
 			this.defaultShip.select();
@@ -154,26 +133,21 @@ public class ViceCalculator extends ViceWindowBase {
 			AbstractDataBox selected = this.getSelectedBox();
 
 			this.shipListBox.getChildren().clear();
-			FunctionUtils.toListUseIndex(datas, (index, data) -> new ShipDataBox(index + 1, data)).forEach(sdb -> {
-				this.shipListBox.getChildren().add(sdb);
-			});
+			FunctionUtils.toListUseIndex(datas, (index, data) -> new ShipDataBox(index + 1, data)).forEach(this.shipListBox.getChildren()::add);
 
 			//先前为默认选择,则返回false
 			if (selected == this.defaultShip) {
 				return false;
 			}
 
-			int shipID = selected.getShipId();
-			int currentExp = selected.getCurrentExp();
-
 			Optional<ShipDataBox> op = FunctionUtils.down(this.shipListBox.getChildren().stream(), ShipDataBox.class)
-					.filter(shipBox -> shipBox.shipId == shipID)
+					.filter(shipBox -> shipBox.shipId == selected.getShipId())
 					.findFirst();
 			if (op.isPresent()) {
 				//先前选择的舰娘被除籍,则不会有值
 				ShipDataBox shipBox = op.get();
 				shipBox.select();
-				return shipBox.currentExp != currentExp;//舰娘的经验是否发生了变化
+				return shipBox.currentExp != selected.getCurrentExp();//舰娘的经验是否发生了变化
 			} else {
 				//未发现与先前选择一样的,则默认选择,并返回true
 				this.defaultShip.select();
@@ -360,7 +334,7 @@ public class ViceCalculator extends ViceWindowBase {
 		}
 	}
 
-	private class RightTable extends TableView<CalcuExpData> {
+	private class RightTable extends TableView<RightTable.CalcuExpData> {
 		public RightTable() {
 			FXUtils.addNewColumn(this, "目标等级", FXUtils.getStringTableCellFactory(), rd -> {
 				if (rd.targetIsCurrent()) {
@@ -380,7 +354,7 @@ public class ViceCalculator extends ViceWindowBase {
 					Arrays.stream("1-5,2-3,3-2,4-3,5-1,5-3,5-4".split(",")).filter(SeaExp.SEAEXPMAP::containsKey),
 					FunctionUtils::returnSelf, SeaExp.SEAEXPMAP::get,
 					(sea, exp) -> FXUtils.addNewColumn(this, sea, FXUtils.getStringTableCellFactory(), rd -> {
-						int baseExp = ViceCalculator.this.calcuBaseExp(exp);
+						int baseExp = this.calcuBaseExp(exp);
 						if (rd.targetIsCurrent()) {
 							return String.format("基础经验:%d", baseExp);
 						} else {
@@ -391,27 +365,43 @@ public class ViceCalculator extends ViceWindowBase {
 					})
 			/**/);
 		}
-	}
 
-	private class CalcuExpData {
-		private final int currentLevel;
-		private final int currentExp;
-		private final int targetLevel;
-		private final int targetExp;
+		private int calcuBaseExp(int seaExp) {
+			double exp = seaExp;
 
-		public CalcuExpData(int currentLevel, int currentExp, int targetLevel) {
-			this.currentLevel = currentLevel;
-			this.currentExp = currentExp;
-			this.targetLevel = targetLevel;
-			this.targetExp = ShipExp.EXPMAP.get(targetLevel);
+			if (ViceCalculator.this.left.flagship.isSelected()) exp *= 1.5;
+			if (ViceCalculator.this.left.mvp.isSelected()) exp *= 2;
+			exp *= Eval.EVALMAP.get(ViceCalculator.this.left.eval.getSelectionModel().getSelectedItem().name).value;
+
+			return (int) Math.floor(exp);
 		}
 
-		public boolean targetIsCurrent() {
-			return this.targetLevel == this.currentLevel;
+		private void updateTable(LeftOptionBox.AbstractDataBox selected) {
+			this.getItems().setAll(IntStream.rangeClosed(selected.getCurrentLevel(), selected.getMaxLevel())//
+					.mapToObj(targetLevel -> new CalcuExpData(selected.getCurrentLevel(), selected.getCurrentExp(), targetLevel))//
+					.collect(Collectors.toList()));
 		}
 
-		public int needExp() {
-			return this.targetExp - this.currentExp;
+		private class CalcuExpData {
+			private final int currentLevel;
+			private final int currentExp;
+			private final int targetLevel;
+			private final int targetExp;
+
+			public CalcuExpData(int currentLevel, int currentExp, int targetLevel) {
+				this.currentLevel = currentLevel;
+				this.currentExp = currentExp;
+				this.targetLevel = targetLevel;
+				this.targetExp = ShipExp.EXPMAP.get(targetLevel);
+			}
+
+			public boolean targetIsCurrent() {
+				return this.targetLevel == this.currentLevel;
+			}
+
+			public int needExp() {
+				return this.targetExp - this.currentExp;
+			}
 		}
 	}
 }

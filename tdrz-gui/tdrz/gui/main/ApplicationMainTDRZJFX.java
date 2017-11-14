@@ -11,7 +11,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
-import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.HBox;
@@ -39,12 +38,13 @@ import tool.function.FunctionUtils;
 public final class ApplicationMainTDRZJFX {
 	private final UnitManager unitManager;
 	private final Stage primaryStage;
-	private final ApplicationTray tray;
 
 	private final ViceCalculator calculator;
 
-	public ApplicationMainTDRZJFX(Stage stage, UnitManager unitManager) {
-		this.unitManager = unitManager;
+	private final ApplicationTray tray;
+
+	public ApplicationMainTDRZJFX(Stage stage, UnitManager um) {
+		this.unitManager = um;
 
 		this.primaryStage = stage;
 		this.primaryStage.setTitle("提督日志");
@@ -52,7 +52,7 @@ public final class ApplicationMainTDRZJFX {
 		this.primaryStage.setScene(new Scene(this.createParent(), 1010, 600));
 		this.primaryStage.setOnCloseRequest(ev -> FunctionUtils.ifNotRunnable(this.exit(), ev::consume));
 
-		this.calculator = new ViceCalculator(unitManager, this.primaryStage);
+		this.calculator = new ViceCalculator(this.unitManager, this.primaryStage);
 
 		this.tray = new ApplicationTray();
 	}
@@ -65,6 +65,7 @@ public final class ApplicationMainTDRZJFX {
 		HBox.setHgrow(slotItemListButton, Priority.ALWAYS);
 
 		PartMaterial material = new PartMaterial(this.unitManager, this.primaryStage);
+		VBox.setVgrow(material, Priority.ALWAYS);
 
 		PartDeckMission deckMission = new PartDeckMission(this.unitManager, this.primaryStage);
 		FXUtils.setMinMaxWidth(deckMission, 200);
@@ -73,6 +74,8 @@ public final class ApplicationMainTDRZJFX {
 		FXUtils.setMinMaxWidth(ndock, 200);
 
 		PartFleet fleet = new PartFleet(this.unitManager, this.primaryStage);
+		fleet.setBackground(FXUtils.createNewBackground(Color.gray(0.85)));
+
 		PartPrint print = new PartPrint(this.unitManager, this.primaryStage);
 		PartQuest quest = new PartQuest(this.unitManager, this.primaryStage);
 		PartPractice practice = new PartPractice(this.unitManager, this.primaryStage);
@@ -84,17 +87,13 @@ public final class ApplicationMainTDRZJFX {
 		VBox.setVgrow(battle, Priority.ALWAYS);
 
 		return FXUtils.createHBox(0, Pos.CENTER, false,
-				FXUtils.createVBox(2, Pos.CENTER, false,
+				FXUtils.createVBox(5, Pos.CENTER, false,
 						box -> HBox.setHgrow(box, Priority.ALWAYS),
 						FXUtils.createHBox(0, Pos.CENTER, false,
 								box -> box.setBackground(FXUtils.createNewBackground(Color.gray(0.85))),
 								FXUtils.createVBox(0, Pos.CENTER, false,
 										box -> HBox.setHgrow(box, Priority.ALWAYS),
-										FXUtils.createHBox(0, Pos.CENTER, false,
-												box -> VBox.setVgrow(box, Priority.ALWAYS),
-												shipListButton,
-												slotItemListButton
-										/**/),
+										FXUtils.createHBox(0, Pos.CENTER, false, shipListButton, slotItemListButton),
 										material
 								/**/),
 								new Separator(Orientation.VERTICAL),
@@ -102,6 +101,7 @@ public final class ApplicationMainTDRZJFX {
 								new Separator(Orientation.VERTICAL),
 								ndock
 						/**/),
+						fleet,
 						new TabPane() {
 							{
 								VBox.setVgrow(this, Priority.ALWAYS);
@@ -109,12 +109,7 @@ public final class ApplicationMainTDRZJFX {
 								this.setTabMinWidth(50);
 								this.getSelectionModel().selectedItemProperty().addListener((source, oldValue, newValue) -> {});
 								this.getTabs().addAll(
-										new Tab("常用", new SplitPane(fleet, print) {
-											{
-												this.setBackground(FXUtils.createNewBackground(Color.gray(0.85)));
-												this.setOrientation(Orientation.VERTICAL);
-											}
-										}),
+										new Tab("事务", print),
 										new Tab("任务", quest),
 										new Tab("演习", practice),
 										new Tab("提督", basic),
@@ -123,15 +118,18 @@ public final class ApplicationMainTDRZJFX {
 								/**/);
 							}
 						}
-				/**/ ),
-				FXUtils.createVBox(0, Pos.CENTER, false, box -> FXUtils.setMinMaxWidth(box, 400), battle)
+				/**/),
+				FXUtils.createVBox(0, Pos.CENTER, false,
+						box -> FXUtils.setMinMaxWidth(box, 400),
+						battle
+				/**/)
 		/**/);
 	}
 
 	private boolean exit() {
 		if (FXUtils.showCloseConfirmationWindow(this.primaryStage, "退出", "退出提督日志?")) {
 			Platform.exit();
-			this.tray.exit();
+			java.awt.SystemTray.getSystemTray().remove(this.tray.trayIcon);
 			return true;
 		} else {
 			return false;
@@ -185,10 +183,6 @@ public final class ApplicationMainTDRZJFX {
 			}
 
 			return popupMenu;
-		}
-
-		private void exit() {
-			java.awt.SystemTray.getSystemTray().remove(this.trayIcon);
 		}
 	}
 
