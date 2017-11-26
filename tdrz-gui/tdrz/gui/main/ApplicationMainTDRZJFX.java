@@ -1,5 +1,8 @@
 package tdrz.gui.main;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -9,7 +12,6 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -21,17 +23,16 @@ import javafx.stage.Stage;
 import tdrz.gui.main.part.PartAirbase;
 import tdrz.gui.main.part.PartBasic;
 import tdrz.gui.main.part.PartBattle;
-import tdrz.gui.main.part.PartDeckMission;
 import tdrz.gui.main.part.PartFleet;
 import tdrz.gui.main.part.PartMapInfo;
 import tdrz.gui.main.part.PartMaterial;
-import tdrz.gui.main.part.PartNdock;
 import tdrz.gui.main.part.PartPractice;
 import tdrz.gui.main.part.PartPrint;
 import tdrz.gui.main.part.PartQuest;
+import tdrz.gui.main.part.PartTimer;
 import tdrz.gui.vice.ViceCalculator;
 import tdrz.server.TDRZServerSevlet;
-import tdrz.update.unit.UnitManager;
+import tdrz.update.UnitManager;
 import tool.FXUtils;
 import tool.function.FunctionUtils;
 
@@ -49,51 +50,51 @@ public final class ApplicationMainTDRZJFX {
 		this.primaryStage = stage;
 		this.primaryStage.setTitle("提督日志");
 		this.primaryStage.setResizable(false);
-		this.primaryStage.setScene(new Scene(this.createParent(), 1010, 600));
 		this.primaryStage.setOnCloseRequest(ev -> FunctionUtils.ifNotRunnable(this.exit(), ev::consume));
+		this.primaryStage.setScene(new Scene(this.createParent(), 1050, 600));
 
-		this.calculator = new ViceCalculator(this.unitManager, this.primaryStage);
-
+		this.calculator = new ViceCalculator(this, this.primaryStage);
 		this.tray = new ApplicationTray();
 	}
 
 	private Parent createParent() {
-		Button shipListButton = new Button("舰娘(100/100)");
-		HBox.setHgrow(shipListButton, Priority.ALWAYS);
+		PartShipSlotItemButton buttons = FunctionUtils.use(new PartShipSlotItemButton(this), part -> {
+			VBox.setVgrow(part, Priority.ALWAYS);
+		});
+		PartMaterial material = FunctionUtils.use(new PartMaterial(this), part -> {
+			VBox.setVgrow(part, Priority.ALWAYS);
+		});
+		PartTimer deckMission = FunctionUtils.use(new PartTimer(this), part -> {
+			FXUtils.setMinMaxWidth(part, 200);
+		});
+		PartTimer ndock = FunctionUtils.use(new PartTimer(this), part -> {
+			FXUtils.setMinMaxWidth(part, 200);
+		});
 
-		Button slotItemListButton = new Button("装备(1000/1000)");
-		HBox.setHgrow(slotItemListButton, Priority.ALWAYS);
+		PartFleet fleet = FunctionUtils.use(new PartFleet(this), part -> {
+			part.setBackground(FXUtils.createBackground(Color.gray(0.85)));
+		});
 
-		PartMaterial material = new PartMaterial(this.unitManager, this.primaryStage);
-		VBox.setVgrow(material, Priority.ALWAYS);
+		PartPrint print = new PartPrint(this);
+		PartQuest quest = new PartQuest(this);
+		PartPractice practice = new PartPractice(this);
+		PartBasic basic = new PartBasic(this);
+		PartMapInfo mapInfo = new PartMapInfo(this);
+		PartAirbase airbase = new PartAirbase(this);
 
-		PartDeckMission deckMission = new PartDeckMission(this.unitManager, this.primaryStage);
-		FXUtils.setMinMaxWidth(deckMission, 200);
+		PartBattle battle = FunctionUtils.use(new PartBattle(this), part -> {
+			VBox.setVgrow(part, Priority.ALWAYS);
+		});
 
-		PartNdock ndock = new PartNdock(this.unitManager, this.primaryStage);
-		FXUtils.setMinMaxWidth(ndock, 200);
-
-		PartFleet fleet = new PartFleet(this.unitManager, this.primaryStage);
-		fleet.setBackground(FXUtils.createNewBackground(Color.gray(0.85)));
-
-		PartPrint print = new PartPrint(this.unitManager, this.primaryStage);
-		PartQuest quest = new PartQuest(this.unitManager, this.primaryStage);
-		PartPractice practice = new PartPractice(this.unitManager, this.primaryStage);
-		PartBasic basic = new PartBasic(this.unitManager, this.primaryStage);
-		PartMapInfo mapInfo = new PartMapInfo(this.unitManager, this.primaryStage);
-		PartAirbase airbase = new PartAirbase(this.unitManager, this.primaryStage);
-
-		PartBattle battle = new PartBattle(this.unitManager, this.primaryStage);
-		VBox.setVgrow(battle, Priority.ALWAYS);
-
-		return FXUtils.createHBox(0, Pos.CENTER, false,
-				FXUtils.createVBox(5, Pos.CENTER, false,
+		int spacing = 3;
+		return FXUtils.createHBox(spacing, Pos.CENTER, false,
+				FXUtils.createVBox(spacing, Pos.CENTER, false,
 						box -> HBox.setHgrow(box, Priority.ALWAYS),
 						FXUtils.createHBox(0, Pos.CENTER, false,
-								box -> box.setBackground(FXUtils.createNewBackground(Color.gray(0.85))),
+								box -> box.setBackground(FXUtils.createBackground(Color.gray(0.85))),
 								FXUtils.createVBox(0, Pos.CENTER, false,
 										box -> HBox.setHgrow(box, Priority.ALWAYS),
-										FXUtils.createHBox(0, Pos.CENTER, false, shipListButton, slotItemListButton),
+										buttons,
 										material
 								/**/),
 								new Separator(Orientation.VERTICAL),
@@ -102,28 +103,31 @@ public final class ApplicationMainTDRZJFX {
 								ndock
 						/**/),
 						fleet,
-						new TabPane() {
-							{
-								VBox.setVgrow(this, Priority.ALWAYS);
-								this.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-								this.setTabMinWidth(50);
-								this.getSelectionModel().selectedItemProperty().addListener((source, oldValue, newValue) -> {});
-								this.getTabs().addAll(
-										new Tab("事务", print),
-										new Tab("任务", quest),
-										new Tab("演习", practice),
-										new Tab("提督", basic),
-										new Tab("地图", mapInfo),
-										new Tab("基地", airbase)
-								/**/);
-							}
-						}
+						FXUtils.createTabPane(
+								tabPane -> {
+									VBox.setVgrow(tabPane, Priority.ALWAYS);
+									tabPane.setBorder(FXUtils.createNewBorder(0, 1, 0, 0));
+									tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+									tabPane.setTabMinWidth(50);
+									tabPane.getSelectionModel().selectedItemProperty().addListener((source, oldValue, newValue) -> {});
+								},
+								new Tab("事务", print),
+								new Tab("任务", quest),
+								new Tab("演习", practice),
+								new Tab("提督", basic),
+								new Tab("地图", mapInfo),
+								new Tab("基地", airbase)
+						/**/)
 				/**/),
-				FXUtils.createVBox(0, Pos.CENTER, false,
+				FXUtils.createVBox(spacing, Pos.CENTER, false,
 						box -> FXUtils.setMinMaxWidth(box, 400),
 						battle
 				/**/)
 		/**/);
+	}
+
+	public UnitManager getUnitManager() {
+		return this.unitManager;
 	}
 
 	private boolean exit() {
@@ -136,7 +140,7 @@ public final class ApplicationMainTDRZJFX {
 		}
 	}
 
-	private class ApplicationTray {
+	private class ApplicationTray extends java.awt.event.MouseAdapter {
 		private final java.awt.TrayIcon trayIcon;
 
 		public ApplicationTray() {
@@ -144,20 +148,7 @@ public final class ApplicationMainTDRZJFX {
 			this.trayIcon.setToolTip("提督日志");
 			this.trayIcon.setImageAutoSize(true);
 			this.trayIcon.setPopupMenu(this.createPopupMenu());
-			this.trayIcon.addMouseListener(new java.awt.event.MouseAdapter() {
-				@Override
-				public void mouseClicked(java.awt.event.MouseEvent ev) {
-					if (ev.getButton() == java.awt.event.MouseEvent.BUTTON1) {
-						FunctionUtils.use(ApplicationMainTDRZJFX.this.primaryStage, stage -> {
-							Platform.runLater(() -> {
-								stage.setIconified(false);
-								stage.show();
-								stage.toFront();
-							});
-						});
-					}
-				}
-			});
+			this.trayIcon.addMouseListener(this);
 			try {
 				java.awt.SystemTray.getSystemTray().add(this.trayIcon);
 			} catch (java.awt.AWTException e) {
@@ -165,24 +156,43 @@ public final class ApplicationMainTDRZJFX {
 			}
 		}
 
+		@Override
+		public void mouseClicked(java.awt.event.MouseEvent ev) {
+			if (ev.getButton() == java.awt.event.MouseEvent.BUTTON1) {
+				FunctionUtils.use(ApplicationMainTDRZJFX.this.primaryStage, stage -> {
+					Platform.runLater(() -> {
+						stage.setIconified(false);
+						stage.show();
+						stage.toFront();
+					});
+				});
+			}
+		}
+
 		private java.awt.PopupMenu createPopupMenu() {
-			java.awt.PopupMenu popupMenu = new java.awt.PopupMenu();
-
-			{
-				java.awt.MenuItem calculatorMenuItem = new java.awt.MenuItem("计算器");
-				calculatorMenuItem.addActionListener(ev -> Platform.runLater(() -> {
-					ApplicationMainTDRZJFX.this.calculator.show();
-				}));
-				popupMenu.add(calculatorMenuItem);
-			}
-
-			{
-				java.awt.MenuItem exit = new java.awt.MenuItem("退出");
-				exit.addActionListener(ev -> Platform.runLater(ApplicationMainTDRZJFX.this::exit));
-				popupMenu.add(exit);
-			}
-
-			return popupMenu;
+			return FunctionUtils.use(new java.awt.PopupMenu(), popupMenu -> {
+				FunctionUtils.asList(
+						FunctionUtils.use(new java.awt.MenuItem("计算器"), menuItem -> {
+							menuItem.addActionListener(ev -> {
+								Platform.runLater(ApplicationMainTDRZJFX.this.calculator::show);
+							});
+						}),
+						FunctionUtils.use(new java.awt.MenuItem("交换"), menuItem -> {
+							menuItem.addActionListener(ev -> {
+								Platform.runLater(() -> {
+									FunctionUtils.use((HBox) ApplicationMainTDRZJFX.this.primaryStage.getScene().getRoot(), root -> {
+										root.getChildren().setAll(FunctionUtils.use(new ArrayList<>(root.getChildren()), Collections::reverse));
+									});
+								});
+							});
+						}),
+						FunctionUtils.use(new java.awt.MenuItem("退出"), menuItem -> {
+							menuItem.addActionListener(ev -> {
+								Platform.runLater(ApplicationMainTDRZJFX.this::exit);
+							});
+						})
+				/**/).forEach(popupMenu::add);
+			});
 		}
 	}
 
@@ -192,7 +202,7 @@ public final class ApplicationMainTDRZJFX {
 
 			TDRZServerSevlet server = new TDRZServerSevlet(() -> 22223, () -> false, () -> "127.0.0.1", () -> 1080);
 			try {
-				server.start();
+				//server.start();
 			} catch (Exception ex) {
 				LOG.warn(ex);
 				LOG.warn("\r\n");

@@ -1,12 +1,11 @@
 package tdrz.gui.main.part;
 
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+import javafx.scene.layout.Pane;
 import tdrz.gui.main.ApplicationMainPart;
-import tdrz.update.unit.UnitManager;
+import tdrz.gui.main.ApplicationMainTDRZJFX;
 
-public class PartBasic extends VBox implements ApplicationMainPart {
-	public PartBasic(UnitManager unitManager, Stage primaryStage) {
-
+public class PartBasic extends Pane implements ApplicationMainPart {
+	public PartBasic(ApplicationMainTDRZJFX main) {
+		//TODO
 	}
 }

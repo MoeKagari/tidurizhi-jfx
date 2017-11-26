@@ -30,26 +30,26 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
-import tdrz.core.translator.ShipDtoTranslator;
+import tdrz.core.translator.ShipTranslator;
 import tdrz.core.util.ExpUtils.Eval;
 import tdrz.core.util.ExpUtils.SeaExp;
 import tdrz.core.util.ExpUtils.ShipExp;
+import tdrz.gui.main.ApplicationMainTDRZJFX;
 import tdrz.update.data.word.WordMasterData.WordMasterShip;
 import tdrz.update.data.word.WordShip;
-import tdrz.update.unit.UnitManager;
 import tool.FXUtils;
 import tool.function.FunctionUtils;
 
 public class ViceCalculator extends ViceWindowBase {
 	private final LeftOptionBox left = FunctionUtils.use(new LeftOptionBox(), box -> {
-		HBox.setHgrow(box, Priority.ALWAYS);
+		FXUtils.setMinMaxWidth(box, 240);
 	});
 	private final RightTable right = FunctionUtils.use(new RightTable(), table -> {
-		FXUtils.setMinMaxWidth(table, 240);
+		HBox.setHgrow(table, Priority.ALWAYS);
 	});
 
-	public ViceCalculator(UnitManager unitManager, Stage primaryStage) {
-		super(unitManager, "计算器");
+	public ViceCalculator(ApplicationMainTDRZJFX main, Stage primaryStage) {
+		super(main, "计算器");
 		this.setScene(new Scene(new HBox(this.left, this.right), 1100, 600));
 	}
 
@@ -64,10 +64,10 @@ public class ViceCalculator extends ViceWindowBase {
 			HBox.setHgrow(label, Priority.ALWAYS);
 			label.setTextAlignment(TextAlignment.LEFT);
 		});
+		private final DefaultDataBox defaultShip;
 		private final VBox shipListBox = FXUtils.createVBox(0, Pos.CENTER, false, box -> {
 			VBox.setVgrow(box, Priority.ALWAYS);
 		});
-		private final DefaultDataBox defaultShip;
 
 		public LeftOptionBox() {
 			Button updateDataButton = new Button("更新");
@@ -78,36 +78,41 @@ public class ViceCalculator extends ViceWindowBase {
 
 			this.flagship = new CheckBox("旗舰");
 			this.flagship.setSelected(true);
-			this.flagship.setOnAction(ev -> ViceCalculator.this.update());
+			this.flagship.setOnAction(new ControlEventHandler(ViceCalculator.this::update));
 
 			this.mvp = new CheckBox("MVP");
 			this.mvp.setSelected(true);
-			this.mvp.setOnAction(ev -> ViceCalculator.this.update());
+			this.mvp.setOnAction(new ControlEventHandler(ViceCalculator.this::update));
 
 			this.eval = new ComboBox<>();
 			this.eval.getItems().addAll(Eval.values());
 			this.eval.getSelectionModel().select(Eval.S);
-			this.eval.setOnAction(ev -> ViceCalculator.this.update());
+			this.eval.setOnAction(new ControlEventHandler(ViceCalculator.this::update));
 
 			this.defaultShip = new DefaultDataBox();
 			this.defaultShip.select();
 
 			this.setSpacing(2);
 			this.getChildren().addAll(
-					FXUtils.createHBox(2, Pos.CENTER_LEFT, false, updateDataButton, this.flagship, this.mvp, this.eval),
+					FXUtils.createHBox(5, Pos.CENTER_LEFT, false, updateDataButton, this.flagship, this.mvp, this.eval),
 					FXUtils.createHBox(5, Pos.CENTER_LEFT, false, secretary, new Label("改造等级 :"), this.gaizhaoLevel),
 					this.defaultShip,
 					FXUtils.createScrollPane(this.shipListBox, scrollPane -> {
 						VBox.setVgrow(scrollPane, Priority.ALWAYS);
-						scrollPane.setBorder(FXUtils.createNewBorder());
+						scrollPane.setBorder(FXUtils.createNewBorder(1, 0, 0, 0));
 						scrollPane.setVbarPolicy(ScrollBarPolicy.ALWAYS);
 					})
 			/**/);
 		}
 
 		private AbstractDataBox getSelectedBox() {
-			return Stream.concat(Stream.of(LeftOptionBox.this.defaultShip), FunctionUtils.down(LeftOptionBox.this.shipListBox.getChildren().stream(), AbstractDataBox.class))
-					.filter(AbstractDataBox::isSelected).findFirst().get();
+			return Stream.concat(
+					Stream.of(LeftOptionBox.this.defaultShip),
+					FunctionUtils.down(LeftOptionBox.this.shipListBox.getChildren().stream(), AbstractDataBox.class)
+			/**/)
+					.filter(AbstractDataBox::isSelected)
+					.findFirst()
+					.get();
 		}
 
 		/**
@@ -116,7 +121,7 @@ public class ViceCalculator extends ViceWindowBase {
 		 * @return 是否重新更新table
 		 */
 		private boolean updateShipData() {
-			List<WordShip> datas = new ArrayList<>(ViceCalculator.this.getUnitManager().shipUnit.shipMap.values());
+			List<WordShip> datas = new ArrayList<>(ViceCalculator.this.getApplicationMain().getUnitManager().getShips());
 			Predicate<WordShip> dataFilter = data -> false;
 			//			if (AppConfig.get().isNotCalcuExpForLevel1Ship()) {
 			//				dataFilter.or(data -> data.getLevel() == 1);
@@ -130,24 +135,24 @@ public class ViceCalculator extends ViceWindowBase {
 			datas.removeIf(dataFilter);
 			datas.sort(Comparator.comparingInt(WordShip::getLevel).reversed());//等级从大到小
 
-			AbstractDataBox selected = this.getSelectedBox();
+			AbstractDataBox oldSelected = this.getSelectedBox();
 
 			this.shipListBox.getChildren().clear();
 			FunctionUtils.toListUseIndex(datas, (index, data) -> new ShipDataBox(index + 1, data)).forEach(this.shipListBox.getChildren()::add);
 
 			//先前为默认选择,则返回false
-			if (selected == this.defaultShip) {
+			if (oldSelected == this.defaultShip) {
 				return false;
 			}
 
 			Optional<ShipDataBox> op = FunctionUtils.down(this.shipListBox.getChildren().stream(), ShipDataBox.class)
-					.filter(shipBox -> shipBox.shipId == selected.getShipId())
+					.filter(shipBox -> shipBox.shipId == oldSelected.getShipId())
 					.findFirst();
 			if (op.isPresent()) {
 				//先前选择的舰娘被除籍,则不会有值
 				ShipDataBox shipBox = op.get();
 				shipBox.select();
-				return shipBox.currentExp != selected.getCurrentExp();//舰娘的经验是否发生了变化
+				return shipBox.currentExp != oldSelected.getCurrentExp();//舰娘的经验是否发生了变化
 			} else {
 				//未发现与先前选择一样的,则默认选择,并返回true
 				this.defaultShip.select();
@@ -156,7 +161,7 @@ public class ViceCalculator extends ViceWindowBase {
 		}
 
 		private boolean selectSecretaryShip() {
-			WordShip secretaryShip = ViceCalculator.this.getUnitManager().getSecretaryShip();
+			WordShip secretaryShip = ViceCalculator.this.getApplicationMain().getUnitManager().getSecretaryShip();
 			if (secretaryShip != null) {
 				AbstractDataBox selected = this.getSelectedBox();
 
@@ -185,7 +190,10 @@ public class ViceCalculator extends ViceWindowBase {
 				FXUtils.setMinMaxWidth(this.check, 50);
 				this.check.setText(text);
 				this.check.setOnAction(ev -> {
-					Stream.concat(Stream.of(LeftOptionBox.this.defaultShip), FunctionUtils.down(LeftOptionBox.this.shipListBox.getChildren().stream(), AbstractDataBox.class))
+					Stream.concat(
+							Stream.of(LeftOptionBox.this.defaultShip),
+							FunctionUtils.down(LeftOptionBox.this.shipListBox.getChildren().stream(), AbstractDataBox.class)
+					/**/)
 							.filter(AbstractDataBox::isSelected)
 							.filter(adb -> adb != this)
 							.findFirst()
@@ -297,13 +305,10 @@ public class ViceCalculator extends ViceWindowBase {
 			ShipDataBox(int index, WordShip ship) {
 				super(String.valueOf(index));
 
-				this.levelLabel = new Label();
-				this.levelLabel.setText(String.format("Lv.%d", ship.getLevel()));
-				FXUtils.setMinMaxWidth(this.levelLabel, 42);
+				this.levelLabel = FXUtils.createNewLabel(String.format("Lv.%d", ship.getLevel()), 42);
 				this.getChildren().add(this.levelLabel);
 
-				this.nameLabel = new Label();
-				this.nameLabel.setText(ShipDtoTranslator.getName(ship));
+				this.nameLabel = FXUtils.createNewLabel(ShipTranslator.getName(ship));
 				this.getChildren().add(this.nameLabel);
 
 				this.shipId = ship.getId();

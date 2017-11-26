@@ -1,36 +1,36 @@
 package tdrz.gui.main.part;
 
 import java.util.Arrays;
-import java.util.function.Function;
+import java.util.Optional;
 
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.stage.Stage;
-import javafx.util.Callback;
 import tdrz.gui.main.ApplicationMainPart;
+import tdrz.gui.main.ApplicationMainTDRZJFX;
+import tdrz.server.RawApiDataType;
+import tdrz.update.data.word.WordMapinfo;
 import tdrz.update.data.word.WordMapinfo.OneMapInfo;
-import tdrz.update.unit.UnitManager;
 import tool.FXUtils;
 import tool.function.FunctionUtils;
 
 public class PartMapInfo extends TableView<OneMapInfo> implements ApplicationMainPart {
-	public PartMapInfo(UnitManager unitManager, Stage primaryStage) {
-		this.addNewColumn("地图", FXUtils.getStringTableCellFactory(), rd -> String.format("%d-%d", rd.getArea(), rd.getNo()));
-		this.addNewColumn("血量", FXUtils.getStringTableCellFactory(), rd -> Arrays.toString(rd.getHP()));
-		this.addNewColumn("基地航空队", FXUtils.getStringTableCellFactory(), rd -> FunctionUtils.ifFunction(rd.getAirBaseDeckCount(), i -> i > 0, String::valueOf, ""));
-		this.addNewColumn("活动地图", FXUtils.getStringTableCellFactory(), rd -> rd.isEventMap() ? "是" : "");
-		this.addNewColumn("Rank", FXUtils.getStringTableCellFactory(), rd -> rd.isEventMap() ? rd.getEventMap().getRank() : "");
-		this.addNewColumn("血条类型", FXUtils.getStringTableCellFactory(), rd -> rd.isEventMap() ? rd.getEventMap().getHptype() : "");
-	}
+	public PartMapInfo(ApplicationMainTDRZJFX main) {
+		FXUtils.addNewColumn(this, "地图", FXUtils.getStringTableCellFactory(), rd -> String.format("%d-%d", rd.getArea(), rd.getNo()));
+		FXUtils.addNewColumn(this, "血量", FXUtils.getStringTableCellFactory(), rd -> Arrays.toString(rd.getHP()));
+		FXUtils.addNewColumn(this, "基地航空队", FXUtils.getStringTableCellFactory(), rd -> FunctionUtils.ifFunction(rd.getAirBaseDeckCount(), i -> i > 0, String::valueOf, ""));
+		FXUtils.addNewColumn(this, "活动地图", FXUtils.getStringTableCellFactory(), rd -> rd.isEventMap() ? "是" : "");
+		FXUtils.addNewColumn(this, "Rank", FXUtils.getStringTableCellFactory(), rd -> rd.isEventMap() ? rd.getEventMap().getRank() : "");
+		FXUtils.addNewColumn(this, "血条类型", FXUtils.getStringTableCellFactory(), rd -> rd.isEventMap() ? rd.getEventMap().getHptype() : "");
 
-	private <T> void addNewColumn(String name, Callback<TableColumn<OneMapInfo, T>, TableCell<OneMapInfo, T>> cell, Function<OneMapInfo, T> cellValue) {
-		TableColumn<OneMapInfo, T> tableColumn = new TableColumn<>();
-		tableColumn.setSortable(false);
-		tableColumn.setText(name);
-		tableColumn.setCellFactory(cell);
-		tableColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(cellValue.apply(param.getValue())));
-		this.getColumns().add(tableColumn);
+		main.getUnitManager().addListener(type -> {
+			if (type == RawApiDataType.MAPINFO) {
+				this.getItems().clear();
+				Optional.ofNullable(main.getUnitManager().getMapInfo())
+						.map(WordMapinfo::getMaps)
+						.orElse(FunctionUtils.emptyList())
+						.stream()
+						.filter(map -> map.getHP()[0] > 0)
+						.forEach(this.getItems()::add);
+			}
+		});
 	}
 }

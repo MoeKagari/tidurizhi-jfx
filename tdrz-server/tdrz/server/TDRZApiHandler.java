@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import server.CommunicationHandler;
-import tdrz.update.unit.UnitManager;
+import tdrz.update.UnitManager;
 
 public class TDRZApiHandler extends CommunicationHandler {
 	private final long time = System.currentTimeMillis();

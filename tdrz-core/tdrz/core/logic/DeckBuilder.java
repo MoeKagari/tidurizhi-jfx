@@ -3,10 +3,10 @@ package tdrz.core.logic;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 
+import tdrz.update.UnitManager;
 import tdrz.update.data.word.WordDeck;
 import tdrz.update.data.word.WordShip;
 import tdrz.update.data.word.WordSlotItem;
-import tdrz.update.unit.UnitManager;
 
 public class DeckBuilder {
 	private final UnitManager unitManager;
@@ -25,7 +25,7 @@ public class DeckBuilder {
 
 		builder.add("version", 4);
 		for (int i = 0; i < 4; i++) {
-			WordDeck deck = this.unitManager.deckUnit.deckHolders[i].getDeck();
+			WordDeck deck = this.unitManager.getDeck(i);
 			if (deck != null) {
 				builder.add("f" + (i + 1), this.getFleetBuilder(deck));
 			}
@@ -38,7 +38,7 @@ public class DeckBuilder {
 		JsonObjectBuilder fleetBuilder = Json.createObjectBuilder();
 
 		for (int i = 0; i < 6; i++) {
-			WordShip ship = this.unitManager.shipUnit.shipMap.get(deck.getShips()[i]);
+			WordShip ship = this.unitManager.getShip(deck.getShipArray()[i]);
 			if (ship != null) {
 				fleetBuilder.add("s" + (i + 1), this.getShipBuilder(ship));
 			}
@@ -56,13 +56,13 @@ public class DeckBuilder {
 		{
 			JsonObjectBuilder itemsBuilder = Json.createObjectBuilder();
 			for (int i = 0; i < 4; i++) {
-				WordSlotItem item = this.unitManager.slotItemUnit.slotItemMap.get(ship.getSlots()[i]);
+				WordSlotItem item = this.unitManager.getSlotItem(ship.getSlots()[i]);
 				if (item != null) {
 					itemsBuilder.add("i" + (i + 1), this.getItemBuilder(item));
 				}
 			}
 			{
-				WordSlotItem item = this.unitManager.slotItemUnit.slotItemMap.get(ship.getSlotex());
+				WordSlotItem item = this.unitManager.getSlotItem(ship.getSlotex());
 				if (item != null) {
 					itemsBuilder.add("ix", this.getItemBuilder(item));
 				}

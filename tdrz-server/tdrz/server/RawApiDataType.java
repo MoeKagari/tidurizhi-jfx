@@ -38,11 +38,12 @@ public enum RawApiDataType {
 	COMBINEBATTLE_EC_MIDNIGHT("/kcsapi/api_req_combined_battle/ec_midnight_battle", "夜战-6vs12-12vs12"),
 	//end
 
+	AIRBASE_SETACTION("/kcsapi/api_req_air_corps/set_action", "基地航空队-状态变更"),
 	AIRBASE_INFORMATION("/kcsapi/api_get_member/base_air_corps", "基地航空队-信息"),
 	AIRBASE_SETPLANE("/kcsapi/api_req_air_corps/set_plane", "基地航空队-设置飞机"),
 	AIRBASE_CHANGENAME("/kcsapi/api_req_air_corps/change_name", "基地航空队-变更队名"),
 	AIRBASE_EXPAND("/kcsapi/api_req_air_corps/expand_base", "基地航空队-扩张"),
-	AIRBASE_SUPPLY("/kcsapi/api_req_air_corps/supply", "陆航补给"),
+	AIRBASE_SUPPLY("/kcsapi/api_req_air_corps/supply", "基地航空队-补给"),
 
 	SORTIE_CONDITIONS("/kcsapi/api_get_member/sortie_conditions", "活动海域的出击条件", "点击决定按钮与出现[选择出击舰队]界面之间,两次返回母港之间只会发起一次"),
 	MXLTVKPYUKLH("/kcsapi/api_req_ranking/mxltvkpyuklh", "战果排行list"),
