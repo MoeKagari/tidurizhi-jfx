@@ -8,7 +8,9 @@ import java.util.function.Function;
 import tdrz.update.UnitManager.Unit;
 import tdrz.update.data.AbstractMemory;
 import tdrz.update.data.memory.MemoryBattle;
+import tdrz.update.data.memory.MemoryKdock;
 import tdrz.update.data.memory.MemoryMission;
+import tdrz.update.data.memory.MemoryNdock;
 import tdrz.update.data.memory.MemoryOther;
 import tdrz.update.data.memory.MemoryShip;
 import tdrz.update.data.memory.MemorySlotItem;
@@ -22,6 +24,8 @@ public class UnitMemory extends Unit<UnitHandlerMemory> {
 	public final List<MemoryShip> memoryShipList = new ArrayList<>();
 	public final List<MemorySlotItem> memorySlotItemList = new ArrayList<>();
 	public final List<MemoryUseItem> memoryUseItemList = new ArrayList<>();
+	public final List<MemoryNdock> memoryNdockList = new ArrayList<>();
+	public final List<MemoryKdock> memoryKdockList = new ArrayList<>();
 
 	@Override
 	public void accept(UnitHandlerMemory unitHandler) {
@@ -31,6 +35,8 @@ public class UnitMemory extends Unit<UnitHandlerMemory> {
 		UnitMemory.addMemory(this.memoryShipList, unitHandler, UnitHandlerMemory::getMemoryShipChange);
 		UnitMemory.addMemory(this.memorySlotItemList, unitHandler, UnitHandlerMemory::getMemorySlotItemChange);
 		UnitMemory.addMemory(this.memoryUseItemList, unitHandler, UnitHandlerMemory::getMemoryUseItemChange);
+		UnitMemory.addMemory(this.memoryNdockList, unitHandler, UnitHandlerMemory::getMemoryNdockChange);
+		UnitMemory.addMemory(this.memoryKdockList, unitHandler, UnitHandlerMemory::getMemoryKdockChange);
 	}
 
 	private static <T extends AbstractMemory> void addMemory(List<T> memoryList, UnitHandlerMemory unitHandler, Function<UnitHandlerMemory, MemoryChange<T>> mapper) {
@@ -59,6 +65,14 @@ public class UnitMemory extends Unit<UnitHandlerMemory> {
 		}
 
 		public default MemoryChange<MemoryUseItem> getMemoryUseItemChange() {
+			return null;
+		}
+
+		public default MemoryChange<MemoryNdock> getMemoryNdockChange() {
+			return null;
+		}
+
+		public default MemoryChange<MemoryKdock> getMemoryKdockChange() {
 			return null;
 		}
 	}

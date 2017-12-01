@@ -26,7 +26,7 @@ public class PartQuest extends TableView<WordQuest> implements ApplicationMainPa
 
 		main.getUnitManager().addListener(type -> {
 			if (type == RawApiDataType.QUEST_LIST) {
-				this.getItems().setAll(main.getUnitManager().getQuests());
+				this.getItems().setAll(main.getUnitManager().getQuestList());
 			}
 		});
 	}

@@ -14,7 +14,6 @@ public class WordRecord extends AbstractWord {
 
 	public WordRecord(JsonObject json) {
 		this.comment = json.getString("api_cmt");
-		//TODO
 	}
 
 	public String getComment() {

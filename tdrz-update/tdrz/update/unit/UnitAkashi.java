@@ -6,30 +6,24 @@ import tool.function.FunctionUtils;
 
 public class UnitAkashi extends Unit<UnitHandlerAkashi> {
 	private final static int RESET_LIMIT = 20 * 60 * 1000;
-	private long time = -1;
+	private long akashiTime = -1;
 
-	public long getTime() {
-		return this.time;
+	public long getAkashiTime() {
+		return this.akashiTime;
 	}
 
 	@Override
 	public void accept(UnitHandlerAkashi unitHandler) {
 		FunctionUtils.notNull(unitHandler.getResetAkashiFlagshipWhenChange(), resetAkashiFlagshipWhenChange -> {
-			//			int api_id = resetAkashiFlagshipWhenChange.api_id;
-			//			int api_ship_idx = resetAkashiFlagshipWhenChange.api_ship_idx;
-			//			long timeWhenChange = resetAkashiFlagshipWhenChange.timeWhenChange;
-			//			if (api_ship_idx != -1 && DeckDtoTranslator.isAkashiFlagship(unitManager.getDeck(api_id - 1))) {
-			//				//变更之后明石旗舰
-			//				//并且不是[随伴舰一括解除](index == -1)
-			//				//TODO 互换的两艘船在两支队伍中时,应该判断两支队伍
-			//				this.time = timeWhenChange;
-			//			}
+			if (resetAkashiFlagshipWhenChange.resetAkashiTimer) {
+				this.akashiTime = resetAkashiFlagshipWhenChange.timeWhenChange;
+			}
 		});
 
 		FunctionUtils.notNull(unitHandler.resetWhenPort(), timeWhenPort -> {
-			if (this.time != -1) {
-				if (timeWhenPort - this.time >= RESET_LIMIT) {
-					this.time = timeWhenPort;
+			if (this.akashiTime != -1) {
+				if (timeWhenPort - this.akashiTime >= RESET_LIMIT) {
+					this.akashiTime = timeWhenPort;
 				}
 			}
 		});
@@ -46,12 +40,11 @@ public class UnitAkashi extends Unit<UnitHandlerAkashi> {
 	}
 
 	public static class ResetAkashiFlagshipWhenChange {
-		public final int api_id, api_ship_idx;
+		public final boolean resetAkashiTimer;
 		public final long timeWhenChange;
 
-		public ResetAkashiFlagshipWhenChange(int api_id, int api_ship_idx, long timeWhenChange) {
-			this.api_id = api_id;
-			this.api_ship_idx = api_ship_idx;
+		public ResetAkashiFlagshipWhenChange(boolean resetAkashiTimer, long timeWhenChange) {
+			this.resetAkashiTimer = resetAkashiTimer;
 			this.timeWhenChange = timeWhenChange;
 		}
 	}

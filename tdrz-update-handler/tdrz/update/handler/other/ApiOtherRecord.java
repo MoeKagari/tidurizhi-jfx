@@ -9,10 +9,10 @@ import tdrz.update.UnitManager;
 import tdrz.update.data.word.WordRecord;
 import tdrz.update.handler.UnitHandler;
 
-public class ApiRecord extends UnitHandler {
+public class ApiOtherRecord extends UnitHandler {
 	private final WordRecord record;
 
-	public ApiRecord(UnitManager unitManager,long time, Map<String, String> fields, JsonValue api_data) {
+	public ApiOtherRecord(UnitManager unitManager,long time, Map<String, String> fields, JsonValue api_data) {
 		this.record = new WordRecord((JsonObject) api_data);
 	}
 

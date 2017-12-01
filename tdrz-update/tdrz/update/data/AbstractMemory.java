@@ -1,6 +1,7 @@
 package tdrz.update.data;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
@@ -12,14 +13,7 @@ import tool.function.FunctionUtils;
 public abstract class AbstractMemory extends AbstractData implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	public long getTime() {
-		return -1;
-	}
-
-	@Override
-	public String toString() {
-		return "";
-	}
+	public abstract long getTime();
 
 	public static class MemoryObj implements Serializable {
 		private static final long serialVersionUID = 1L;
@@ -68,6 +62,13 @@ public abstract class AbstractMemory extends AbstractData implements Serializabl
 					.filter(FunctionUtils::isNotNull)
 					.map(word -> new MemoryObjSlotItem(word))
 					.toArray(MemoryObjSlotItem[]::new);
+		}
+
+		public MemoryObjShip(WordShip ship, List<WordSlotItem> slotItemList) {
+			this.id = ship.getId();
+			this.shipId = ship.getShipId();
+			this.level = ship.getLevel();
+			this.slotItemArray = slotItemList.stream().map(MemoryObjSlotItem::new).toArray(MemoryObjSlotItem[]::new);
 		}
 
 		public int getShipId() {

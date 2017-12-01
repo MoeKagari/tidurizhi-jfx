@@ -15,21 +15,21 @@ import tdrz.update.handler.UnitHandler;
 import tdrz.update.handler.deck.ApiDeck;
 import tdrz.update.handler.ndock.ApiNdock;
 
-public class ApiPort extends UnitHandler {
-	private final UnitHandler basic, material, ndock, deck;
+public class ApiOtherPort extends UnitHandler {
+	private final UnitHandler apiBasic, apiMaterial, apiNdock, apiDeck;
 	private final Integer combined;
-	private final List<WordShip> ships;
+	private final List<WordShip> shipList;
 	private final long timeWhenPort;
 
-	public ApiPort(UnitManager unitManager, long time, Map<String, String> fields, JsonValue api_data) {
+	public ApiOtherPort(UnitManager unitManager, long time, Map<String, String> fields, JsonValue api_data) {
 		JsonObject json = (JsonObject) api_data;
 
-		this.basic = new ApiBasic(unitManager, time, fields, json.get("api_basic"));
-		this.material = new ApiMaterial(unitManager, time, fields, json.get("api_material"));
-		this.ndock = new ApiNdock(unitManager, time, fields, json.get("api_ndock"));
-		this.deck = new ApiDeck(unitManager, time, fields, json.get("api_deck_port"));
+		this.apiBasic = new ApiOtherBasic(unitManager, time, fields, json.get("api_basic"));
+		this.apiMaterial = new ApiOtherMaterial(unitManager, time, fields, json.get("api_material"));
+		this.apiNdock = new ApiNdock(unitManager, time, fields, json.get("api_ndock"));
+		this.apiDeck = new ApiDeck(unitManager, time, fields, json.get("api_deck_port"));
 
-		this.ships = json.getJsonArray("api_ship").getValuesAs(JsonObject.class).stream().map(WordShip::new).collect(Collectors.toCollection(LinkedList::new));
+		this.shipList = json.getJsonArray("api_ship").getValuesAs(JsonObject.class).stream().map(WordShip::new).collect(Collectors.toCollection(LinkedList::new));
 		if (json.containsKey("api_combined_flag")) {
 			this.combined = json.getInt("api_combined_flag");
 		} else {
@@ -50,12 +50,12 @@ public class ApiPort extends UnitHandler {
 
 	@Override
 	public List<WordShip> getAddShipList() {
-		return this.ships;
+		return this.shipList;
 	}
 
 	@Override
 	public List<UnitHandler> otherUnitHandler() {
-		return Arrays.asList(this.basic, this.material, this.ndock, this.deck);
+		return Arrays.asList(this.apiBasic, this.apiMaterial, this.apiNdock, this.apiDeck);
 	}
 
 	@Override

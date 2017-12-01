@@ -2,6 +2,8 @@ package tdrz.update.data.word;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import tdrz.update.data.AbstractWord;
 
 /**
@@ -24,10 +26,10 @@ public class WordMaterial extends AbstractWord {
 	}
 
 	public int[] getAmount() {
-		return Arrays.copyOf(this.material, this.material.length);
+		return ArrayUtils.clone(this.material);
 	}
 
 	public static String[] getMaterialText() {
-		return Arrays.copyOf(TEXT, TEXT.length);
+		return ArrayUtils.clone(TEXT);
 	}
 }

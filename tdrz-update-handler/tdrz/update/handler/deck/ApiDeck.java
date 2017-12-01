@@ -14,10 +14,10 @@ import tdrz.update.handler.UnitHandler;
 import tdrz.update.unit.UnitDeck.DeckUpdate;
 
 public class ApiDeck extends UnitHandler {
-	private final List<DeckUpdate> deckUpdates;
+	private final List<DeckUpdate> deckUpdateList;
 
 	public ApiDeck(UnitManager unitManager, long time, Map<String, String> fields, JsonValue api_data) {
-		this.deckUpdates = ((JsonArray) api_data).getValuesAs(JsonObject.class)
+		this.deckUpdateList = ((JsonArray) api_data).getValuesAs(JsonObject.class)
 				.stream().map(json -> {
 					int api_id = json.getInt("api_id");
 					WordDeck deck = new WordDeck(time, json);
@@ -26,7 +26,7 @@ public class ApiDeck extends UnitHandler {
 	}
 
 	@Override
-	public List<DeckUpdate> getDeckUpdate() {
-		return this.deckUpdates;
+	public List<DeckUpdate> getDeckUpdateList() {
+		return this.deckUpdateList;
 	}
 }

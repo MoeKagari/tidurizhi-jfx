@@ -3,9 +3,9 @@ package tdrz.update.data.word;
 import javax.json.JsonObject;
 
 import tdrz.core.translator.MasterDataTranslator;
-import tdrz.core.util.JsonUtils;
 import tdrz.update.data.AbstractWord;
 import tdrz.update.data.word.WordMasterData.WordMasterShip;
+import tool.JsonUtils;
 
 /**
  * 玩家所持舰娘

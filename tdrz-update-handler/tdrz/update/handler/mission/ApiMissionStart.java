@@ -26,6 +26,7 @@ public class ApiMissionStart extends UnitHandler {
 
 		WordDeck deck = unitManager.getDeck(api_deck_id - 1);
 		this.memoryMissionStart = new MemoryMissionStart(
+				time,
 				new MemoryObjDeck(api_deck_id, deck, unitManager::getShip, unitManager::getSlotItem),
 				MasterDataTranslator.getMissionName(api_mission_id),
 				api_complatetime

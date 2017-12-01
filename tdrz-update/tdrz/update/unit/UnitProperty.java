@@ -21,11 +21,11 @@ public class UnitProperty extends Unit<UnitHandlerProperty> {
 	public void accept(UnitHandlerProperty unitHandler) {
 		FunctionUtils.ifRunnable(unitHandler.needClearUseItemList(), this.useItemMap::clear);
 		unitHandler.getAddUseItemList().forEach(useItem -> this.useItemMap.put(useItem.getId(), useItem));
-		unitHandler.getRemoveUseItemList().forEach(this.useItemMap::remove);
+		unitHandler.getRemovedUseItemList().forEach(this.useItemMap::remove);
 
 		FunctionUtils.ifRunnable(unitHandler.needClearSlotItemList(), this.slotItemMap::clear);
 		unitHandler.getAddSlotItemList().forEach(slotItem -> this.slotItemMap.put(slotItem.getId(), slotItem));
-		unitHandler.getRemoveSlotItemList().forEach(this.slotItemMap::remove);
+		unitHandler.getRemovedSlotItemList().forEach(this.slotItemMap::remove);
 		FunctionUtils.notNull(unitHandler.getSlotItemLock(), lock -> {
 			FunctionUtils.notNull(this.slotItemMap.get(lock.api_slotitem_id), slotItem -> {
 				slotItem.slotItemLock(lock.api_locked);
@@ -34,9 +34,9 @@ public class UnitProperty extends Unit<UnitHandlerProperty> {
 
 		FunctionUtils.ifRunnable(unitHandler.needClearShipList(), this.shipMap::clear);
 		unitHandler.getAddShipList().forEach(ship -> this.shipMap.put(ship.getId(), ship));
-		unitHandler.getRemoveShipList().forEach(this.shipMap::remove);
+		unitHandler.getRemovedShipList().forEach(this.shipMap::remove);
 		//补给
-		unitHandler.getCharge().forEach(charge -> {
+		unitHandler.getChargeList().forEach(charge -> {
 			FunctionUtils.notNull(this.shipMap.get(charge.api_id), ship -> {
 				ship.charge(charge.api_fuel, charge.api_bull, charge.api_onslot);
 			});
@@ -61,7 +61,10 @@ public class UnitProperty extends Unit<UnitHandlerProperty> {
 		});
 	}
 
-	public static interface UnitHandlerProperty extends UnitHandlerShip, UnitHandlerSlotItem, UnitHandlerUseItem {}
+	public static interface UnitHandlerProperty extends
+			UnitHandlerShip, UnitHandlerShipUpdate,
+			UnitHandlerSlotItem, UnitHandlerSlotItemUpdate,
+			UnitHandlerUseItem {}
 
 	public static interface UnitHandlerShip {
 		public default boolean needClearShipList() {
@@ -72,11 +75,13 @@ public class UnitProperty extends Unit<UnitHandlerProperty> {
 			return FunctionUtils.emptyList();
 		}
 
-		public default List<Integer> getRemoveShipList() {
+		public default List<Integer> getRemovedShipList() {
 			return FunctionUtils.emptyList();
 		}
+	}
 
-		public default List<Charge> getCharge() {
+	public static interface UnitHandlerShipUpdate {
+		public default List<Charge> getChargeList() {
 			return FunctionUtils.emptyList();
 		}
 
@@ -131,7 +136,6 @@ public class UnitProperty extends Unit<UnitHandlerProperty> {
 				this.api_locked = api_locked;
 			}
 		}
-
 	}
 
 	public static interface UnitHandlerSlotItem {
@@ -143,10 +147,12 @@ public class UnitProperty extends Unit<UnitHandlerProperty> {
 			return Collections.emptyList();
 		}
 
-		public default List<Integer> getRemoveSlotItemList() {
+		public default List<Integer> getRemovedSlotItemList() {
 			return Collections.emptyList();
 		}
+	}
 
+	public static interface UnitHandlerSlotItemUpdate {
 		public default SlotItemLock getSlotItemLock() {
 			return null;
 		}
@@ -171,7 +177,7 @@ public class UnitProperty extends Unit<UnitHandlerProperty> {
 			return Collections.emptyList();
 		}
 
-		public default List<Integer> getRemoveUseItemList() {
+		public default List<Integer> getRemovedUseItemList() {
 			return Collections.emptyList();
 		}
 	}

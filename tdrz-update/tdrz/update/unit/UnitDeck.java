@@ -2,11 +2,9 @@ package tdrz.update.unit;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import tdrz.core.translator.DeckDtoTranslator;
 import tdrz.update.UnitManager.Unit;
 import tdrz.update.data.word.WordDeck;
 import tdrz.update.unit.UnitDeck.UnitHandlerDeck;
@@ -17,7 +15,7 @@ public class UnitDeck extends Unit<UnitHandlerDeck> {
 
 	@Override
 	public void accept(UnitHandlerDeck unitHandler) {
-		unitHandler.getDeckUpdate().forEach(deckUpdate -> {
+		unitHandler.getDeckUpdateList().forEach(deckUpdate -> {
 			FunctionUtils.forEach(this.deckHolders, deckHolder -> {
 				if (deckUpdate.api_id == deckHolder.id) {
 					deckHolder.deck = deckUpdate.deck;
@@ -26,13 +24,22 @@ public class UnitDeck extends Unit<UnitHandlerDeck> {
 		});
 
 		FunctionUtils.notNull(unitHandler.getDeckChange(), deckChange -> {
-			FunctionUtils.forEach(this.deckHolders, deckHolder -> {
-				if (deckChange.api_id == deckHolder.id) {
-					FunctionUtils.notNull(deckHolder.deck, deck -> {
-						this.doDeckChange(deck, deckChange.api_id, deckChange.api_ship_idx, deckChange.api_ship_id);
-					});
+			for (int[] deckChangeDetail : new int[][] { deckChange.oldDeckChangeDetail, deckChange.newDeckChangeDetail }) {
+				int deckId = deckChangeDetail[0], index = deckChangeDetail[1], shipId = deckChangeDetail[2];
+				if (deckId != -1) {
+					WordDeck deck = this.deckHolders[deckId - 1].deck;
+					if (index == -1) {
+						//除旗舰以外全解除
+						int[] shipArray = deck.getShipArray();
+						int[] newShipArray = new int[shipArray.length];//7船对策
+						newShipArray[0] = shipArray[0];
+						deck.setShipArray(newShipArray);
+					} else {
+						//替换
+						deck.getShipArray()[index] = shipId;
+					}
 				}
-			});
+			}
 		});
 
 		FunctionUtils.notNull(unitHandler.getDeckPresetSelect(), deckPresetSelect -> {
@@ -54,33 +61,8 @@ public class UnitDeck extends Unit<UnitHandlerDeck> {
 		});
 	}
 
-	private void doDeckChange(final WordDeck deck, final int api_id, final int api_ship_idx, final int api_ship_id) {
-		if (api_ship_idx == -1) {
-			//除旗舰其余全解除
-			deck.setShipArray(new int[] { deck.getShipArray()[0], -1, -1, -1, -1, -1 });
-		} else {
-			if (api_ship_id == -1) {
-				//解除某一艘船
-				deck.setShipArray(ArrayUtils.addAll(
-						IntStream.range(0, deck.getShipArray().length).filter(index -> index != api_ship_idx).map(index -> deck.getShipArray()[index]).toArray(), -1
-				/**/));
-			} else {
-				//替换为另外的ship
-				for (int index = 0; index < this.deckHolders.length; index++) {
-					int shipIndex = DeckDtoTranslator.indexInDeck(this.deckHolders[index].deck, api_ship_id);
-					if (shipIndex != -1) {
-						//替换的ship在某deck中
-						this.deckHolders[index].deck.getShipArray()[shipIndex] = deck.getShipArray()[api_ship_idx];
-						break;
-					}
-				}
-				deck.getShipArray()[api_ship_idx] = api_ship_id;
-			}
-		}
-	}
-
 	public static interface UnitHandlerDeck {
-		public default List<DeckUpdate> getDeckUpdate() {
+		public default List<DeckUpdate> getDeckUpdateList() {
 			return Collections.emptyList();
 		}
 
@@ -121,12 +103,11 @@ public class UnitDeck extends Unit<UnitHandlerDeck> {
 	}
 
 	public static class DeckChange {
-		public final int api_id, api_ship_idx, api_ship_id;
+		public final int[] oldDeckChangeDetail, newDeckChangeDetail;
 
-		public DeckChange(int api_id, int api_ship_idx, int api_ship_id) {
-			this.api_id = api_id;
-			this.api_ship_idx = api_ship_idx;
-			this.api_ship_id = api_ship_id;
+		public DeckChange(int[] oldDeckChangeDetail, int[] newDeckChangeDetail) {
+			this.oldDeckChangeDetail = ArrayUtils.clone(oldDeckChangeDetail);
+			this.newDeckChangeDetail = ArrayUtils.clone(newDeckChangeDetail);
 		}
 	}
 

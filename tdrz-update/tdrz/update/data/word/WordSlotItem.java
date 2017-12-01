@@ -22,9 +22,9 @@ public class WordSlotItem extends AbstractWord implements Serializable {
 	public WordSlotItem(JsonObject json) {
 		this.id = json.getInt("api_id");
 		this.slotitemId = json.getInt("api_slotitem_id");
-		this.isLocked = json.getInt("api_locked", -1) == 1;
+		this.isLocked = json.getInt("api_locked", 0) == 1;
 		this.level = json.getInt("api_level", 0);
-		this.alv = json.getInt("api_alv", -1);
+		this.alv = json.getInt("api_alv", 0);
 
 		this.masterData = MasterDataTranslator.getMasterSlotitem(this.slotitemId);
 	}

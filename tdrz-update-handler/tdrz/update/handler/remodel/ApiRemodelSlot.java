@@ -10,17 +10,14 @@ import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import org.apache.commons.lang3.ArrayUtils;
-
-import tdrz.core.util.JsonUtils;
 import tdrz.update.UnitManager;
 import tdrz.update.data.memory.MemoryOther;
 import tdrz.update.data.memory.other.MemoryRemodel;
 import tdrz.update.data.word.WordSlotItem;
 import tdrz.update.handler.UnitHandler;
-import tdrz.update.unit.UnitMaterial;
 import tdrz.update.unit.UnitMaterial.MaterialChangeOption;
 import tdrz.update.unit.UnitMemory.MemoryChange;
+import tool.JsonUtils;
 import tool.function.FunctionUtils;
 
 public class ApiRemodelSlot extends UnitHandler {
@@ -34,8 +31,8 @@ public class ApiRemodelSlot extends UnitHandler {
 
 		boolean certain = Integer.parseInt(fields.get("api_certain_flag")) == 1;
 		boolean success = json.getInt("api_remodel_flag") == 1;
-		int[] oldMaterial = ArrayUtils.clone(unitManager.getCurrentMaterial().getAmount());
-		int[] newMaterial = MaterialChangeOption.getNewMaterial(oldMaterial, JsonUtils.getIntArray(json, "api_after_material"), UnitMaterial.MaterialChangeOption.UPDATE);
+		int[] oldMaterial = unitManager.getCurrentMaterial().getAmount();
+		int[] newMaterial = MaterialChangeOption.getNewMaterial(oldMaterial, JsonUtils.getIntArray(json, "api_after_material"), MaterialChangeOption.UPDATE);
 		WordSlotItem oldSlotItem = unitManager.getSlotItem(Integer.parseInt(fields.get("api_slot_id")));
 		//失败时,null
 		//成功非更新装备时,level +1
@@ -88,7 +85,7 @@ public class ApiRemodelSlot extends UnitHandler {
 	}
 
 	@Override
-	public List<Integer> getRemoveSlotItemList() {
+	public List<Integer> getRemovedSlotItemList() {
 		return this.removeSlotItemList;
 	}
 }

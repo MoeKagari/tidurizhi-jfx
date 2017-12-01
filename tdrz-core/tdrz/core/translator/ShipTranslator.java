@@ -1,14 +1,13 @@
 package tdrz.core.translator;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import tdrz.core.logic.HPMessage;
 import tdrz.core.util.AppConstants;
+import tdrz.core.util.HPMessage;
 import tdrz.update.UnitManager;
 import tdrz.update.data.word.WordMasterData.WordMasterShip;
 import tdrz.update.data.word.WordMasterData.WordMasterSlotitem;
@@ -18,7 +17,6 @@ import tdrz.update.unit.UnitDeck.DeckHolder;
 import tdrz.update.unit.UnitNdock.NdockHodler;
 import tool.function.FunctionUtils;
 
-/** 全部方法 ship==null 可 */
 public class ShipTranslator {
 	public static double getHPPercent(WordShip ship) {
 		if (ship == null) return 1;
@@ -26,13 +24,7 @@ public class ShipTranslator {
 	}
 
 	public static String getTypeString(WordShip ship) {
-		if (ship == null) return "";
-		return getTypeString(ship.getMasterData());
-	}
-
-	public static String getTypeString(WordMasterShip msdd) {
-		if (msdd == null) return "";
-		int type = msdd.getType();
+		int type = ship.getMasterData().getType();
 		switch (type) {
 			case 1:
 				return "海防艦";
@@ -84,19 +76,20 @@ public class ShipTranslator {
 	}
 
 	public static String getName(WordShip ship) {
-		if (ship == null) return "";
-		return FunctionUtils.notNull(ship.getMasterData(), WordMasterShip::getName, "");
+		return ship.getMasterData().getName();
 	}
 
 	public static String getDetail(WordShip ship) {
-		if (ship == null) return "";
-		ArrayList<String> detail = new ArrayList<>();
-		{
-			detail.add(getName(ship));
-			detail.add(String.format("经验: %d/%d", ship.getNextExp(), ship.getCurrentExp()));
-			detail.add(String.format("速力: %s", getSokuString(ship, true)));
-		}
-		return StringUtils.join(detail, "\n");
+		return String.join("\n", new String[] {
+				getName(ship),
+				String.format("经验: %d/%d", ship.getNextExp(), ship.getCurrentExp()),
+				String.format("速力: %s", getSokuString(ship, true))
+		});
+	}
+
+	/** 高速? */
+	public static boolean highspeed(WordShip ship) {
+		return ship.getSoku() != 5;
 	}
 
 	public static String getSokuString(WordShip ship, boolean showHighspeed) {
@@ -116,22 +109,13 @@ public class ShipTranslator {
 		}
 	}
 
-	public static boolean highspeed(WordShip ship) {
-		if (ship == null) return true;
-		return ship.getSoku() != 5;
-	}
-
 	public static int getSuodi(WordShip ship) {
-		if (ship == null) return 0;
-		int suodi = 0;
-		for (int i = 0; i < 4; i++) {
-			suodi += SlotItemTranslator.getSuodi(ship.getSlots()[i]);
-		}
-		return suodi;
+		return FunctionUtils.stream(ArrayUtils.addAll(ship.getSlots(), ship.getSlotex()))
+				.map(SlotItemTranslator::getSuodi)
+				.sum();
 	}
 
 	public static int getZhikong(WordShip ship) {
-		if (ship == null) return 0;
 		int zhikong = 0;
 		for (int i = 0; i < 4; i++) {
 			zhikong += SlotItemTranslator.getZhikong(ship.getSlots()[i], ship.getOnSlot()[i]);
@@ -139,36 +123,36 @@ public class ShipTranslator {
 		return zhikong;
 	}
 
+	/** 明石? */
 	public static boolean isAkashi(WordShip ship) {
-		if (ship == null) return false;
 		return ship.getShipId() == 182 || ship.getShipId() == 187;
 	}
 
+	/** 入渠中 */
 	public static boolean isInNyukyo(WordShip ship) {
-		if (ship == null) return false;
-		return Arrays.stream(UnitManager.getUnitManager().getNdockHodlers()).map(NdockHodler::getNdock).anyMatch(
-				ndock -> FunctionUtils.isNotNull(ndock) &&
-						ndock.getShipId() == ship.getId()
+		return Arrays.stream(UnitManager.getUnitManager().getNdockHodlers()).map(NdockHodler::getNdock)
+				.anyMatch(
+						ndock -> FunctionUtils.isNotNull(ndock) && ndock.getShipId() == ship.getId()
 		/**/);
 	}
 
+	/** 远征中 */
 	public static boolean isInMission(WordShip ship) {
-		if (ship == null) return false;
-		return Arrays.stream(UnitManager.getUnitManager().getDeckHolders()).map(DeckHolder::getDeck).anyMatch(
-				deck -> FunctionUtils.isNotNull(deck) &&
-						DeckDtoTranslator.isInMission(deck) &&
-						DeckDtoTranslator.isShipInDeck(deck, ship.getId())
+		return Arrays.stream(UnitManager.getUnitManager().getDeckHolders())
+				.map(DeckHolder::getDeck).anyMatch(
+						deck -> FunctionUtils.isNotNull(deck) &&
+								DeckDtoTranslator.isInMission(deck) &&
+								DeckDtoTranslator.isShipInDeck(deck, ship.getId())
 		/**/);
 	}
 
 	public static String getStateString(WordShip ship, boolean showMax) {
-		if (ship == null) return "";
 		String text = HPMessage.getString(getHPPercent(ship));
 		return FunctionUtils.isFalse(showMax) && StringUtils.equals(text, HPMessage.getString(1)) ? "" : text;
 	}
 
+	/** 需要补给 */
 	public static boolean needHokyo(WordShip ship) {
-		if (ship == null) return false;
 		WordMasterShip msdd = ship.getMasterData();
 		if (msdd == null) return false;
 		return msdd.getFuelMax() != ship.getFuel() || //
@@ -178,33 +162,27 @@ public class ShipTranslator {
 
 	/** 完好 */
 	public static boolean perfectState(WordShip ship) {
-		if (ship == null) return false;
-		return ship.getNowHp() == ship.getMaxHp();
+		return ship.getNowHp() >= ship.getMaxHp();
 	}
 
 	/** 擦伤小破 */
 	public static boolean healthyState(WordShip ship) {
-		if (ship == null) return false;
-		return terribleState(ship) ? false : getHPPercent(ship) < 1;
+		return FunctionUtils.isFalse(perfectState(ship) || terribleState(ship));
 	}
 
 	/** 中破大破 */
 	public static boolean terribleState(WordShip ship) {
-		if (ship == null) return false;
 		return getHPPercent(ship) <= 0.5;
 	}
 
 	public static boolean dapo(WordShip ship) {
-		if (ship == null) return false;
 		return getHPPercent(ship) <= 0.25;
 	}
 
 	public static int whichDeck(WordShip ship) {
-		if (ship != null) {
-			for (int i = 0; i < 4; i++) {
-				if (DeckDtoTranslator.isShipInDeck(UnitManager.getUnitManager().getDeck(i), ship.getId())) {
-					return i;
-				}
+		for (int index = 0; index < 4; index++) {
+			if (DeckDtoTranslator.isShipInDeck(UnitManager.getUnitManager().getDeck(index), ship.getId())) {
+				return index;
 			}
 		}
 		return -1;
@@ -215,19 +193,19 @@ public class ShipTranslator {
 	}
 
 	public static boolean canOpeningTaisen(WordShip ship) {
-		if (ship == null) return false;
-
 		WordMasterShip msd = ship.getMasterData();
-		if (msd == null) return false;
 		//驱逐舰,轻巡洋舰,重雷装巡洋舰,练习巡洋舰
-		if (IntStream.of(2, 3, 4, 21).noneMatch(type -> type == msd.getType())) return false;
-
-		int taisen = ship.getTaisen()[0];
-		for (int equip : ArrayUtils.addAll(ship.getSlots(), ship.getSlotex())) {
-			WordMasterSlotitem md = FunctionUtils.notNull(UnitManager.getUnitManager().getSlotItem(equip), WordSlotItem::getMasterData, null);
-			taisen -= FunctionUtils.notNull(md, WordMasterSlotitem::getTaisen, 0);
+		if (IntStream.of(2, 3, 4, 21).noneMatch(type -> type == msd.getType())) {
+			return false;
 		}
-		return taisen >= 64;
+
+		return 64 <= ship.getTaisen()[0] -
+				FunctionUtils.stream(ArrayUtils.addAll(ship.getSlots(), ship.getSlotex()))
+						.mapToObj(UnitManager.getUnitManager()::getSlotItem)
+						.filter(FunctionUtils::isNotNull)
+						.map(WordSlotItem::getMasterData)
+						.mapToInt(WordMasterSlotitem::getTaisen)
+						.sum();
 	}
 
 	public static boolean canEquipDaihatsu(WordShip ship) {
@@ -244,6 +222,37 @@ public class ShipTranslator {
 
 	public static int getPowerMidnight(WordShip ship) {
 		return 0;//TODO
+	}
+
+	/** 改造所需资源 */
+	public static int[] getRemodelConsumption(WordShip ship) {
+		WordMasterShip wms = ship.getMasterData();
+		int[] mainMaterial = new int[] { 0, wms.getGaizhaoBull(), wms.getGaizhaoFuel(), 0 };
+
+		//转换改造需要额外的资源
+		int[] otherMaterial;
+		switch (ship.getShipId()) {//TODO
+			default:
+				otherMaterial = new int[] { 0, 0, 0, 0 };
+		}
+
+		return ArrayUtils.addAll(mainMaterial, otherMaterial);
+	}
+
+	/** 改造所需图纸 */
+	public static int getRemodelDrawing(WordShip ship) {
+		switch (ship.getShipId()) {//TODO
+			default:
+				return 0;
+		}
+	}
+
+	/** 改造所需甲板 */
+	public static int getRemodelCatapult(WordShip ship) {
+		switch (ship.getShipId()) {//TODO
+			default:
+				return 0;
+		}
 	}
 
 	public static interface AbstractShip {

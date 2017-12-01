@@ -2,49 +2,30 @@ package tdrz.update.data.word;
 
 import javax.json.JsonObject;
 
-import tdrz.core.translator.MasterDataTranslator;
 import tdrz.update.data.AbstractWord;
 
-/**
- * 演习对象
- * 
- * @author MoeKagari
- */
 public class WordPracticeEnemy extends AbstractWord {
-	private final PracticeEnemyShip[] ships;
+	private final JsonObject json;
 
 	public WordPracticeEnemy(JsonObject json) {
-		this.ships = json.getJsonObject("api_deck").getJsonArray("api_ships")//
-				.getValuesAs(JsonObject.class).stream()//
-				.map(jo -> jo.size() == 1 ? null : new PracticeEnemyShip(jo))//
-				.toArray(PracticeEnemyShip[]::new);
+		this.json = json;
 	}
 
-	public PracticeEnemyShip[] getShips() {
-		return this.ships;
-	}
+	/*
+	 	api_enemy_id			：敵提督ID
+		api_enemy_name			：敵提督名
+		api_enemy_name_id		：
+		api_enemy_level			：敵艦隊司令部Lv.
+		api_enemy_rank			：敵階級 string
+		api_enemy_flag			：旗フラグ?　1=銅, 2=銀, 3=金
+		api_enemy_flag_ship		：敵艦隊旗艦ID
+		api_enemy_comment		：敵コメント
+		api_enemy_comment_id	：
+		api_state				：0=未挑戦, 1=E敗北?, 2=D敗北?, 3=C敗北, 4=B勝利, 5=A勝利, 6=S勝利
+		api_medals				：甲種勲章保有数 
+	 */
 
-	public class PracticeEnemyShip {
-		//private final int id;//-1为不存在ship,下列两个值也不存在,其它时候无需要的意义
-		private final int lv;
-		private final String name;
-
-		public PracticeEnemyShip(JsonObject json) {
-			//this.id = json.getInt("api_id");
-			this.lv = json.getInt("api_level");
-			this.name = MasterDataTranslator.getShipName(json.getInt("api_ship_id"));
-		}
-
-		//		public boolean exist() {
-		//			return this.id != -1;
-		//		}
-
-		public int getLv() {
-			return this.lv;
-		}
-
-		public String getName() {
-			return this.name;
-		}
+	public int getEnemyId() {
+		return this.json.getInt("api_enemy_id");
 	}
 }

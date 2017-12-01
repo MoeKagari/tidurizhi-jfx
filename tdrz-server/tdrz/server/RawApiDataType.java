@@ -49,7 +49,7 @@ public enum RawApiDataType {
 	MXLTVKPYUKLH("/kcsapi/api_req_ranking/mxltvkpyuklh", "战果排行list"),
 	UPDATECOMMENT("/kcsapi/api_req_member/updatecomment", "变更签名"),
 	GET_INCENTIVE("/kcsapi/api_req_member/get_incentive", "道具奖励(启动时)(比如战果奖励)"),
-	UNSETSLOT("/kcsapi/api_get_member/unsetslot", "未知-UNSETSLOT"),
+	UNSETSLOT("/kcsapi/api_get_member/unsetslot", "未被装备的装备list"),
 
 	USEITEM("/kcsapi/api_get_member/useitem", "所有道具(普通道具栏)"),
 	ITEMUSE("/kcsapi/api_req_member/itemuse", "使用道具(普通道具栏)"),

@@ -1,54 +1,64 @@
 package tdrz.update.data.word;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.json.JsonObject;
 
-import tdrz.core.util.JsonUtils;
 import tdrz.update.data.AbstractWord;
+import tool.JsonUtils;
 
 public class WordMasterData extends AbstractWord {
+	//@formatter:off
 	private final JsonObject json;
-	private final Map<Integer, WordMasterShip> masterShipDataMap = new HashMap<>();
-	private final Map<Integer, WordMasterSlotitem> masterSlotitemDataMap = new HashMap<>();
-	private final Map<Integer, WordMasterMission> masterMissionDataMap = new HashMap<>();
-	private final Map<Integer, WordMasterUserItem> masterUserItemDtoMap = new HashMap<>();
+	public WordMasterData(JsonObject json) {	this.json = json;}
+	public JsonObject getJson() {return this.json;}
+	//@formatter:on
 
-	public WordMasterData(JsonObject json) {
-		this.json = json;
-		json.getJsonArray("api_mst_ship").getValuesAs(JsonObject.class).stream().map(WordMasterShip::new).forEach(md -> this.masterShipDataMap.put(md.getId(), md));
-		json.getJsonArray("api_mst_slotitem").getValuesAs(JsonObject.class).stream().map(WordMasterSlotitem::new).forEach(md -> this.masterSlotitemDataMap.put(md.getId(), md));
-		json.getJsonArray("api_mst_mission").getValuesAs(JsonObject.class).stream().map(WordMasterMission::new).forEach(md -> this.masterMissionDataMap.put(md.getId(), md));
-		json.getJsonArray("api_mst_useitem").getValuesAs(JsonObject.class).stream().map(WordMasterUserItem::new).forEach(md -> this.masterUserItemDtoMap.put(md.getId(), md));
-	}
-
-	public JsonObject getJson() {
-		return this.json;
-	}
+	private Map<Integer, WordMasterShip> masterShipDataMap = null;
+	private Map<Integer, WordMasterSlotitem> masterSlotitemDataMap = null;
+	private Map<Integer, WordMasterMission> masterMissionDataMap = null;
+	private Map<Integer, WordMasterUserItem> masterUserItemDtoMap = null;
 
 	public Map<Integer, WordMasterShip> getMasterShipDataMap() {
+		if (this.masterShipDataMap == null) {
+			this.masterShipDataMap = this.json.getJsonArray("api_mst_ship").getValuesAs(JsonObject.class).stream()
+					.map(WordMasterShip::new)
+					.collect(Collectors.toMap(WordMasterShip::getId, Function.identity()));
+		}
 		return this.masterShipDataMap;
 	}
 
 	public Map<Integer, WordMasterSlotitem> getMasterSlotitemDataMap() {
+		if (this.masterSlotitemDataMap == null) {
+			this.masterSlotitemDataMap = this.json.getJsonArray("api_mst_slotitem").getValuesAs(JsonObject.class).stream()
+					.map(WordMasterSlotitem::new)
+					.collect(Collectors.toMap(WordMasterSlotitem::getId, Function.identity()));
+		}
 		return this.masterSlotitemDataMap;
 	}
 
 	public Map<Integer, WordMasterMission> getMasterMissionDataMap() {
+		if (this.masterMissionDataMap == null) {
+			this.masterMissionDataMap = this.json.getJsonArray("api_mst_mission").getValuesAs(JsonObject.class).stream()
+					.map(WordMasterMission::new)
+					.collect(Collectors.toMap(WordMasterMission::getId, Function.identity()));
+		}
 		return this.masterMissionDataMap;
 	}
 
 	public Map<Integer, WordMasterUserItem> getMasterUserItemDtoMap() {
+		if (this.masterUserItemDtoMap == null) {
+			this.masterUserItemDtoMap = this.json.getJsonArray("api_mst_useitem").getValuesAs(JsonObject.class).stream()
+					.map(WordMasterUserItem::new)
+					.collect(Collectors.toMap(WordMasterUserItem::getId, Function.identity()));
+		}
 		return this.masterUserItemDtoMap;
 	}
 
 	public class WordMasterShip {
 		private final JsonObject json;
-
-		public JsonObject getJsonObject() {
-			return this.json;
-		}
 
 		public WordMasterShip(JsonObject json) {
 			this.json = json;
@@ -68,6 +78,16 @@ public class WordMasterData extends AbstractWord {
 
 		public int getGaizhaoAfterId() {
 			return Integer.parseInt(this.json.getString("api_aftershipid"));
+		}
+
+		/** 改造所需钢材 */
+		public int getGaizhaoFuel() {
+			return this.json.getInt("api_afterfuel");
+		}
+
+		/** 改造所需弹药 */
+		public int getGaizhaoBull() {
+			return this.json.getInt("api_afterbull");
 		}
 
 		public int[] getTaik() {
@@ -117,10 +137,6 @@ public class WordMasterData extends AbstractWord {
 
 	public class WordMasterSlotitem {
 		private final JsonObject json;
-
-		public JsonObject getJsonObject() {
-			return this.json;
-		}
 
 		public WordMasterSlotitem(JsonObject json) {
 			this.json = json;

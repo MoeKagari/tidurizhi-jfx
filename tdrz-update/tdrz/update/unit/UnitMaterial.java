@@ -46,11 +46,7 @@ public class UnitMaterial extends Unit<UnitHandlerMaterial> {
 
 		public static int[] getNewMaterial(int[] oldMaterial, int[] materialChange, MaterialChangeOption option) {
 			if (option == UnitMaterial.MaterialChangeOption.UPDATE) {
-				if (Arrays.equals(oldMaterial, materialChange)) {
-					return null;
-				} else {
-					return ArrayUtils.clone(materialChange);
-				}
+				return ArrayUtils.clone(materialChange);
 			} else {
 				int[] newMaterial;
 				if (option == UnitMaterial.MaterialChangeOption.UPDATE_MAIN) {

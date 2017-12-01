@@ -8,7 +8,13 @@ import tdrz.update.UnitManager;
 import tdrz.update.handler.UnitHandler;
 
 public class ApiKaisouSlotSet extends UnitHandler {
-	public ApiKaisouSlotSet(UnitManager unitManager,long time, Map<String, String> fields, JsonValue api_data) {
+	public ApiKaisouSlotSet(UnitManager unitManager, long time, Map<String, String> fields, JsonValue api_data) {
 		//后接ship3
+		//nothing to do
+	}
+
+	@Override
+	public boolean haveAnyUpdate() {
+		return false;
 	}
 }

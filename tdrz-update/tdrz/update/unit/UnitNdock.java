@@ -12,21 +12,17 @@ public class UnitNdock extends Unit<UnitHandlerNdock> {
 
 	@Override
 	public void accept(UnitHandlerNdock unitHandler) {
-		unitHandler.getNdock().forEach(ndockUpdate -> {
+		unitHandler.getNdockList().forEach(ndockUpdate -> {
 			FunctionUtils.forEach(this.ndockHodlers, ndockHodler -> {
-
-			});
-		});
-
-		FunctionUtils.notNull(unitHandler.getNdockNyukyoStart(), ndockNyukyoStart -> {
-			FunctionUtils.forEach(this.ndockHodlers, ndockHodler -> {
-
+				if (ndockHodler.id == ndockUpdate.api_id) {
+					ndockHodler.ndock = ndockUpdate.ndock;
+				}
 			});
 		});
 
 		FunctionUtils.notNull(unitHandler.getNdockNyukyoSpeedChange(), ndockNyukyoSpeedChange -> {
 			FunctionUtils.forEach(this.ndockHodlers, ndockHodler -> {
-				if (ndockHodler.id == ndockNyukyoSpeedChange.api_ndock_id) {
+				if (ndockHodler.id == ndockNyukyoSpeedChange) {
 					ndockHodler.ndock = null;
 				}
 			});
@@ -34,15 +30,12 @@ public class UnitNdock extends Unit<UnitHandlerNdock> {
 	}
 
 	public static interface UnitHandlerNdock {
-		public default List<NdockUpdate> getNdock() {
+		public default List<NdockUpdate> getNdockList() {
 			return FunctionUtils.emptyList();
 		}
 
-		public default NdockNyukyoStart getNdockNyukyoStart() {
-			return null;
-		}
-
-		public default NdockNyukyoSpeedChange getNdockNyukyoSpeedChange() {
+		/** 使用 高速修复 的ndock的id */
+		public default Integer getNdockNyukyoSpeedChange() {
 			return null;
 		}
 	}
@@ -67,25 +60,6 @@ public class UnitNdock extends Unit<UnitHandlerNdock> {
 		public NdockUpdate(int api_id, WordNdock ndock) {
 			this.api_id = api_id;
 			this.ndock = ndock;
-		}
-	}
-
-	public static class NdockNyukyoStart {
-		public final int api_ndock_id, api_ship_id;
-		public final boolean api_highspeed;
-
-		public NdockNyukyoStart(int api_ndock_id, int api_ship_id, boolean api_highspeed) {
-			this.api_ndock_id = api_ndock_id;
-			this.api_ship_id = api_ship_id;
-			this.api_highspeed = api_highspeed;
-		}
-	}
-
-	public static class NdockNyukyoSpeedChange {
-		public final int api_ndock_id;
-
-		public NdockNyukyoSpeedChange(int api_ndock_id) {
-			this.api_ndock_id = api_ndock_id;
 		}
 	}
 }

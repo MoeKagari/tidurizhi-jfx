@@ -1,4 +1,4 @@
-package tdrz.core.logic;
+package tdrz.core.util;
 
 import javafx.scene.paint.Color;
 

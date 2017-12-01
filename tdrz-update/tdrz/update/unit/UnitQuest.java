@@ -22,18 +22,10 @@ public class UnitQuest extends Unit<UnitHandlerQuest> {
 		FunctionUtils.notNull(unitHandler.getQuestListChange(), questListChange -> {
 
 		});
-		FunctionUtils.notNull(unitHandler.getQuestClear(), questClear -> {
-
-		});
 	}
 
 	public static interface UnitHandlerQuest {
 		public default QuestListChange getQuestListChange() {
-			return null;
-		}
-
-		/** 完成的任务的 id */
-		public default Integer getQuestClear() {
 			return null;
 		}
 	}

@@ -14,10 +14,10 @@ import tdrz.update.handler.UnitHandler;
 import tdrz.update.unit.UnitNdock.NdockUpdate;
 
 public class ApiNdock extends UnitHandler {
-	private final List<NdockUpdate> ndockUpdates;
+	private final List<NdockUpdate> ndockUpdateList;
 
 	public ApiNdock(UnitManager unitManager,long time, Map<String, String> fields, JsonValue api_data) {
-		this.ndockUpdates = ((JsonArray) api_data).getValuesAs(JsonObject.class).stream()
+		this.ndockUpdateList = ((JsonArray) api_data).getValuesAs(JsonObject.class).stream()
 				.map(json -> {
 					int api_id = json.getInt("api_id");
 					WordNdock ndock = new WordNdock(json);
@@ -26,7 +26,7 @@ public class ApiNdock extends UnitHandler {
 	}
 
 	@Override
-	public List<NdockUpdate> getNdock() {
-		return this.ndockUpdates;
+	public List<NdockUpdate> getNdockList() {
+		return this.ndockUpdateList;
 	}
 }

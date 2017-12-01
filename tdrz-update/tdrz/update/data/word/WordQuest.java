@@ -2,8 +2,8 @@ package tdrz.update.data.word;
 
 import javax.json.JsonObject;
 
-import tdrz.core.util.JsonUtils;
 import tdrz.update.data.AbstractWord;
+import tool.JsonUtils;
 
 /**
  * 任务

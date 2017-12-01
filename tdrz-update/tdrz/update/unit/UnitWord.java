@@ -2,7 +2,7 @@ package tdrz.update.unit;
 
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.function.Supplier;
+import java.util.Optional;
 
 import javax.json.Json;
 
@@ -10,7 +10,6 @@ import tdrz.update.UnitManager.Unit;
 import tdrz.update.data.word.WordBasic;
 import tdrz.update.data.word.WordMapinfo;
 import tdrz.update.data.word.WordMasterData;
-import tdrz.update.data.word.WordPracticeEnemy;
 import tdrz.update.data.word.WordRecord;
 import tdrz.update.unit.UnitWord.UnitHandlerWord;
 import tool.function.FunctionUtils;
@@ -28,7 +27,6 @@ public class UnitWord extends Unit<UnitHandlerWord> {
 	private WordMapinfo mapInfo = null;
 	private WordMasterData masterData;
 	private WordRecord record = null;
-	private WordPracticeEnemy practiceEnemy = null;
 
 	public UnitWord() {
 		try {
@@ -65,36 +63,23 @@ public class UnitWord extends Unit<UnitHandlerWord> {
 		return this.mapInfo;
 	}
 
-	public WordPracticeEnemy getPracticeEnemy() {
-		return this.practiceEnemy;
-	}
-
 	@Override
 	public void accept(UnitHandlerWord unitHandler) {
-		this.record = this.updateField(unitHandler::getRecord, this.record);
-		this.combined = this.updateField(unitHandler::getCombined, this.combined);
-		this.basicInformation = this.updateField(unitHandler::getBasicInformation, this.basicInformation);
-		this.mapInfo = this.updateField(unitHandler::getMapInfo, this.mapInfo);
-		this.masterData = this.updateField(unitHandler::getMasterData, this.masterData);
-		this.practiceEnemy = this.updateField(unitHandler::getPracticeEnemy, this.practiceEnemy);
+		this.record = Optional.ofNullable(unitHandler.getRecord()).orElse(this.record);
+		this.mapInfo = Optional.ofNullable(unitHandler.getMapinfo()).orElse(this.mapInfo);
+		this.combined = Optional.ofNullable(unitHandler.getCombined()).orElse(this.combined);
+		this.masterData = Optional.ofNullable(unitHandler.getMasterData()).orElse(this.masterData);
+		this.basicInformation = Optional.ofNullable(unitHandler.getBasicInformation()).orElse(this.basicInformation);
 
-		FunctionUtils.notNull(unitHandler.getComment(), comment -> {
+		FunctionUtils.notNull(unitHandler.getUpdateComment(), comment -> {
 			if (this.record != null) {
 				this.record.setComment(comment);
 			}
 		});
 	}
 
-	private <S> S updateField(Supplier<S> newValue, S oldValue) {
-		return FunctionUtils.notNull(newValue.get(), FunctionUtils::returnSelf, oldValue);
-	}
-
 	public static interface UnitHandlerWord {
-		public default String getComment() {
-			return null;
-		}
-
-		public default WordPracticeEnemy getPracticeEnemy() {
+		public default String getUpdateComment() {
 			return null;
 		}
 
@@ -106,7 +91,7 @@ public class UnitWord extends Unit<UnitHandlerWord> {
 			return null;
 		}
 
-		public default WordMapinfo getMapInfo() {
+		public default WordMapinfo getMapinfo() {
 			return null;
 		}
 

@@ -12,11 +12,11 @@ import tdrz.update.UnitManager;
 import tdrz.update.data.word.WordUseItem;
 import tdrz.update.handler.UnitHandler;
 
-public class ApiUseItem extends UnitHandler {
-	private final List<WordUseItem> useItems;
+public class ApiOtherUseItem extends UnitHandler {
+	private final List<WordUseItem> useItemList;
 
-	public ApiUseItem(UnitManager unitManager, long time, Map<String, String> fields, JsonValue api_data) {
-		this.useItems = ((JsonArray) api_data).getValuesAs(JsonObject.class).stream().map(WordUseItem::new).collect(Collectors.toList());
+	public ApiOtherUseItem(UnitManager unitManager, long time, Map<String, String> fields, JsonValue api_data) {
+		this.useItemList = ((JsonArray) api_data).getValuesAs(JsonObject.class).stream().map(WordUseItem::new).collect(Collectors.toList());
 	}
 
 	@Override
@@ -26,6 +26,6 @@ public class ApiUseItem extends UnitHandler {
 
 	@Override
 	public List<WordUseItem> getAddUseItemList() {
-		return this.useItems;
+		return this.useItemList;
 	}
 }

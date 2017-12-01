@@ -9,6 +9,11 @@ import tdrz.update.handler.UnitHandler;
 
 public class ApiDeckPresetDeck extends UnitHandler {
 	public ApiDeckPresetDeck(UnitManager unitManager, long time, Map<String, String> fields, JsonValue api_data) {
-		//TODO
+		//nothing to do
+	}
+
+	@Override
+	public boolean haveAnyUpdate() {
+		return false;
 	}
 }

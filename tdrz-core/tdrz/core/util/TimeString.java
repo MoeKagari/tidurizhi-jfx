@@ -1,6 +1,4 @@
-package tdrz.core.logic;
-
-import tdrz.core.util.AppConstants;
+package tdrz.core.util;
 
 public class TimeString {
 	private static final int ONE_HOUR = 60 * 60;

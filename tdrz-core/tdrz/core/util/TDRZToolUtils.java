@@ -7,7 +7,7 @@ import java.util.function.IntFunction;
 import java.util.function.ToIntFunction;
 import java.util.stream.IntStream;
 
-public class ToolUtils {
+public class TDRZToolUtils {
 	public static int[] doubleToInteger(double[] ds, DoubleToIntFunction fun) {
 		return Arrays.stream(ds).mapToInt(fun).toArray();
 	}

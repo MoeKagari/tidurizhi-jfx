@@ -7,20 +7,19 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import org.apache.commons.lang3.ArrayUtils;
-
-import tdrz.core.util.JsonUtils;
 import tdrz.update.UnitManager;
 import tdrz.update.data.AbstractMemory.MemoryObjDeck;
 import tdrz.update.data.memory.MemoryMission;
 import tdrz.update.data.memory.mission.MemoryMissionResult;
 import tdrz.update.data.memory.mission.MemoryMissionResult.MissionResultItem;
-import tdrz.update.data.word.WordDeck;
 import tdrz.update.handler.UnitHandler;
+import tdrz.update.unit.UnitMaterial.MaterialChangeOption;
 import tdrz.update.unit.UnitMemory.MemoryChange;
+import tool.JsonUtils;
 
 public class ApiMissionResult extends UnitHandler {
 	private final MemoryMissionResult memoryMissionResult;
+	private final int[] newMaterial;
 
 	public ApiMissionResult(UnitManager unitManager, long time, Map<String, String> fields, JsonValue api_data) {
 		JsonObject json = (JsonObject) api_data;
@@ -40,26 +39,31 @@ public class ApiMissionResult extends UnitHandler {
 				.map(jsonValue -> jsonValue instanceof JsonArray ? (JsonArray) jsonValue : null)
 				.map(JsonUtils::getIntArray)
 				.orElse(new int[] { 0, 0, 0, 0 });
-		MissionResultItem[] missionResultItems = { null, null };
+		MissionResultItem[] missionResultItemArray = { null, null };
 		int[] flags = JsonUtils.getIntArray(json, "api_useitem_flag");
 		if (flags[0] != 0) {
-			missionResultItems[0] = new MissionResultItem(json.getJsonObject("api_get_item1"), flags[0]);
+			missionResultItemArray[0] = new MissionResultItem(json.getJsonObject("api_get_item1"), flags[0]);
 		}
 		if (flags[1] != 0) {
-			missionResultItems[1] = new MissionResultItem(json.getJsonObject("api_get_item2"), flags[1]);
+			missionResultItemArray[1] = new MissionResultItem(json.getJsonObject("api_get_item2"), flags[1]);
 		}
 
-		int[] oldMaterial = ArrayUtils.clone(unitManager.getCurrentMaterial().getAmount());
-		WordDeck deck = unitManager.getDeck(api_deck_id - 1);
+		int[] oldMaterial = unitManager.getCurrentMaterial().getAmount();
+		this.newMaterial = MaterialChangeOption.getNewMaterial(oldMaterial, api_get_material, MaterialChangeOption.INCREASE_MAIN);
 		this.memoryMissionResult = new MemoryMissionResult(
 				time,
-				new MemoryObjDeck(api_deck_id, deck, unitManager::getShip, unitManager::getSlotItem),
+				new MemoryObjDeck(api_deck_id, unitManager.getDeck(api_deck_id - 1), unitManager::getShip, unitManager::getSlotItem),
 				api_maparea_name, api_detail, api_quest_name, api_clear_result,
 				api_get_exp, api_member_exp,
 				api_get_ship_exp, api_get_exp_lvup,
-				oldMaterial, api_get_material,
-				missionResultItems
+				oldMaterial, this.newMaterial,
+				missionResultItemArray
 		/**/);
+	}
+
+	@Override
+	public int[] getNewMaterial() {
+		return this.newMaterial;
 	}
 
 	@Override

@@ -9,7 +9,12 @@ import tdrz.update.handler.UnitHandler;
 
 public class ApiDeckItemUseCond extends UnitHandler {
 	public ApiDeckItemUseCond(UnitManager unitManager, long time, Map<String, String> fields, JsonValue api_data) {
-		//TODO  需记录
+		//TODO  暂时不处理
 		//后接 ship2 , useitem
+	}
+
+	@Override
+	public boolean haveAnyUpdate() {
+		return false;
 	}
 }

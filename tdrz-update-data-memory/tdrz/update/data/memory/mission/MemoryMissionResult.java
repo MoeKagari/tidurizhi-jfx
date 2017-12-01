@@ -12,15 +12,14 @@ import tdrz.update.data.memory.MemoryMission;
 
 public class MemoryMissionResult extends MemoryMission {
 	private static final long serialVersionUID = 1L;
-
 	private final long time;
 	private final MemoryObjDeck deck;
 	private final String missionAreaName, missionDetail, missionName, missionClearResult;
 	private final int admiralGetExp, admiralExp;
-	private final int[] oldMaterial, getMaterial;
+	private final int[] oldMaterial, newMaterial;
 	private final int[] shipGetExpArray;
 	private final int[][] shipExpArrayArray;
-	private final MissionResultItem[] missionResultItems;
+	private final MissionResultItem[] missionResultItemArray;
 
 	public MemoryMissionResult(
 			long time,
@@ -28,8 +27,8 @@ public class MemoryMissionResult extends MemoryMission {
 			String api_maparea_name, String api_detail, String api_quest_name, int api_clear_result,
 			int api_get_exp, int api_member_exp,
 			int[] api_get_ship_exp, int[][] api_get_exp_lvup,
-			int[] oldMaterial, int[] api_get_material,
-			MissionResultItem[] missionResultItems
+			int[] oldMaterial, int[] newMaterial,
+			MissionResultItem[] missionResultItemArray
 	/**/) {
 		this.time = time;
 		this.deck = deck;
@@ -52,11 +51,11 @@ public class MemoryMissionResult extends MemoryMission {
 		}
 		this.admiralGetExp = api_get_exp;
 		this.admiralExp = api_member_exp;
-		this.oldMaterial = ArrayUtils.subarray(oldMaterial, 0, 4);
-		this.getMaterial = ArrayUtils.clone(api_get_material);
+		this.oldMaterial = ArrayUtils.clone(oldMaterial);
+		this.newMaterial = ArrayUtils.clone(newMaterial);
 		this.shipGetExpArray = ArrayUtils.clone(api_get_ship_exp);
 		this.shipExpArrayArray = Stream.of(api_get_exp_lvup).map(shipExpArray -> IntStream.of(shipExpArray).toArray()).toArray(int[][]::new);
-		this.missionResultItems = missionResultItems;
+		this.missionResultItemArray = missionResultItemArray;
 	}
 
 	@Override
@@ -96,8 +95,8 @@ public class MemoryMissionResult extends MemoryMission {
 		return this.oldMaterial;
 	}
 
-	public int[] getGetMaterial() {
-		return this.getMaterial;
+	public int[] getNewMaterial() {
+		return this.newMaterial;
 	}
 
 	public int[] getShipGetExpArray() {
@@ -108,8 +107,8 @@ public class MemoryMissionResult extends MemoryMission {
 		return this.shipExpArrayArray;
 	}
 
-	public MissionResultItem[] getMissionResultItems() {
-		return this.missionResultItems;
+	public MissionResultItem[] getMissionResultItemArray() {
+		return this.missionResultItemArray;
 	}
 
 	public static class MissionResultItem implements Serializable {

@@ -12,11 +12,11 @@ import tdrz.update.UnitManager;
 import tdrz.update.data.word.WordSlotItem;
 import tdrz.update.handler.UnitHandler;
 
-public class ApiSlotItem extends UnitHandler {
-	private final List<WordSlotItem> slotItems;
+public class ApiOtherSlotItem extends UnitHandler {
+	private final List<WordSlotItem> slotItemList;
 
-	public ApiSlotItem(UnitManager unitManager, long time, Map<String, String> fields, JsonValue api_data) {
-		this.slotItems = ((JsonArray) api_data).getValuesAs(JsonObject.class).stream().map(WordSlotItem::new).collect(Collectors.toList());
+	public ApiOtherSlotItem(UnitManager unitManager, long time, Map<String, String> fields, JsonValue api_data) {
+		this.slotItemList = ((JsonArray) api_data).getValuesAs(JsonObject.class).stream().map(WordSlotItem::new).collect(Collectors.toList());
 	}
 
 	@Override
@@ -26,6 +26,6 @@ public class ApiSlotItem extends UnitHandler {
 
 	@Override
 	public List<WordSlotItem> getAddSlotItemList() {
-		return this.slotItems;
+		return this.slotItemList;
 	}
 }

@@ -5,40 +5,48 @@ import java.util.Map;
 import javax.json.JsonValue;
 
 import tdrz.update.UnitManager;
+import tdrz.update.data.AbstractMemory.MemoryObjShip;
+import tdrz.update.data.memory.MemoryNdock;
+import tdrz.update.data.memory.ndock.MemoryNdockNyukyoStart;
 import tdrz.update.data.word.WordShip;
 import tdrz.update.handler.UnitHandler;
-import tdrz.update.unit.UnitNdock.NdockNyukyoStart;
+import tdrz.update.unit.UnitMaterial.MaterialChangeOption;
+import tdrz.update.unit.UnitMemory.MemoryChange;
 
 public class ApiNdockNyukyoStart extends UnitHandler {
-	private final NdockNyukyoStart ndockNyukyoStart;
+	private final MemoryNdockNyukyoStart memoryNdockNyukyoStart;
 
 	public ApiNdockNyukyoStart(UnitManager unitManager, long time, Map<String, String> fields, JsonValue api_data) {
-		int api_ndock_id = Integer.parseInt(fields.get("api_ndock_id"));
+		//int api_ndock_id = Integer.parseInt(fields.get("api_ndock_id"));
 		int api_ship_id = Integer.parseInt(fields.get("api_ship_id"));
 		boolean api_highspeed = Integer.parseInt(fields.get("api_highspeed")) == 1;
-		this.ndockNyukyoStart = new NdockNyukyoStart(api_ndock_id, api_ship_id, api_highspeed);
-
-		WordShip ship = unitManager.getShip(api_ship_id);
-		if (ship != null) {
-			//TODO 资源
+		if (api_highspeed) {
+			//使用高速修复,后无ndock
+			//但无需刷新ndock
+		} else {
+			//不使用高速修复,后接ndock
+			//无需手动刷新ndock
 		}
-		//		ShipDto ship = GlobalContext.getShip(Integer.parseInt(data.getField("api_ship_id")));
-		//		if (ship != null) {
-		//			GlobalContext.getCurrentMaterial().setMaterial("入渠", data.getTime(), ship.getNyukyoCost(), false);
-		//		}
 
-		//		if (api_highspeed) {
-		//			//使用高速修复,后无ndock
-		//			FunctionUtils.notNull(ship, ShipDto::nyukyoEnd);
-		//			GlobalContext.getCurrentMaterial().setMaterial("高速修复", data.getTime(), new int[] { 0, 0, 0, 0, 0, 1, 0, 0 }, false);
-		//			this.ndock = null;
-		//		} else {
-		//			//不使用高速修复,后接ndock ,无需处理
-		//		}
+		WordShip nyukyoedShip = unitManager.getShip(api_ship_id);
+		int[] oldMaterial = unitManager.getCurrentMaterial().getAmount();
+		int[] newMaterial = MaterialChangeOption.getNewMaterial(oldMaterial, nyukyoedShip.getNyukyoCost(), MaterialChangeOption.DECREASE);
+		if (api_highspeed) {
+			newMaterial = MaterialChangeOption.getNewMaterial(newMaterial, new int[] { 0, 0, 0, 0, 0, 1, 0, 0 }, MaterialChangeOption.DECREASE);
+		}
+		this.memoryNdockNyukyoStart = new MemoryNdockNyukyoStart(
+				time, new MemoryObjShip(nyukyoedShip, unitManager::getSlotItem),
+				oldMaterial, newMaterial
+		/**/);
 	}
 
 	@Override
-	public NdockNyukyoStart getNdockNyukyoStart() {
-		return this.ndockNyukyoStart;
+	public MemoryChange<MemoryNdock> getMemoryNdockChange() {
+		return new MemoryChange<MemoryNdock>() {
+			@Override
+			public MemoryNdock getMemoryChange() {
+				return ApiNdockNyukyoStart.this.memoryNdockNyukyoStart;
+			}
+		};
 	}
 }

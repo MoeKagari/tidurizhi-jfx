@@ -9,10 +9,10 @@ import tdrz.update.UnitManager;
 import tdrz.update.data.word.WordBasic;
 import tdrz.update.handler.UnitHandler;
 
-public class ApiBasic extends UnitHandler {
+public class ApiOtherBasic extends UnitHandler {
 	private final WordBasic basic;
 
-	public ApiBasic(UnitManager unitManager, long time, Map<String, String> fields, JsonValue api_data) {
+	public ApiOtherBasic(UnitManager unitManager, long time, Map<String, String> fields, JsonValue api_data) {
 		this.basic = new WordBasic((JsonObject) api_data);
 	}
 

@@ -1,5 +1,6 @@
 package tdrz.gui.main.part;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javafx.scene.control.TableView;
@@ -9,8 +10,8 @@ import tdrz.core.util.ExpUtils.ShipExp;
 import tdrz.gui.main.ApplicationMainPart;
 import tdrz.gui.main.ApplicationMainTDRZJFX;
 import tdrz.server.RawApiDataType;
-import tdrz.update.data.word.WordPracticeEnemy;
-import tdrz.update.data.word.WordPracticeEnemy.PracticeEnemyShip;
+import tdrz.update.data.word.WordPracticeEnemyInfo;
+import tdrz.update.data.word.WordPracticeEnemyInfo.PracticeEnemyInfoShip;
 import tool.FXUtils;
 import tool.function.FunctionUtils;
 
@@ -23,16 +24,17 @@ public class PartPractice extends TableView<PartPractice.CalcuPracticeExpData> i
 
 		main.getUnitManager().addListener(type -> {
 			if (type == RawApiDataType.PRACTICE_ENEMYINFO) {
-				PracticeEnemyShip[] ships = FunctionUtils.notNull(main.getUnitManager().getPracticeEnemy(), WordPracticeEnemy::getShips, null);
-				if (ships != null) {
-					int lv0 = FunctionUtils.ifFunction(ships[0], FunctionUtils::isNotNull, ship -> ship.getLv(), 1);
-					int lv1 = FunctionUtils.ifFunction(ships[1], FunctionUtils::isNotNull, ship -> ship.getLv(), 1);
-					this.getItems().setAll(
-							FunctionUtils.stream(FlagshipMVP.values())
-									.map(fm -> new CalcuPracticeExpData(lv0, lv1, fm))
-									.collect(Collectors.toList())
-					/**/);
-				}
+				Optional.ofNullable(main.getUnitManager().getPracticeEnemyInfo())
+						.map(WordPracticeEnemyInfo::getShipArray)
+						.ifPresent(shipArray -> {
+							int lv0 = FunctionUtils.ifFunction(shipArray[0], PracticeEnemyInfoShip::exist, PracticeEnemyInfoShip::getLevel, 1);
+							int lv1 = FunctionUtils.ifFunction(shipArray[1], PracticeEnemyInfoShip::exist, PracticeEnemyInfoShip::getLevel, 1);
+							this.getItems().setAll(
+									FunctionUtils.stream(FlagshipMVP.values())
+											.map(fm -> new CalcuPracticeExpData(lv0, lv1, fm))
+											.collect(Collectors.toList())
+							/**/);
+						});
 			}
 		});
 	}

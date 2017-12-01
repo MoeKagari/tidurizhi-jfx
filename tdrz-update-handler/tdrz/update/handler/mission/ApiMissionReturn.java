@@ -27,6 +27,7 @@ public class ApiMissionReturn extends UnitHandler {
 
 		WordDeck deck = unitManager.getDeck(api_deck_id - 1);
 		this.memoryMissionReturn = new MemoryMissionReturn(
+				time,
 				new MemoryObjDeck(api_deck_id, deck, unitManager::getShip, unitManager::getSlotItem),
 				MasterDataTranslator.getMissionName(api_mission.getInt(1)),
 				api_mission.getJsonNumber(2).longValue()

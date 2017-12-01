@@ -1,34 +1,144 @@
 package tdrz.core.translator;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import tdrz.core.translator.SlotItemTranslator.ItemDataMap.ItemData;
-import tdrz.update.data.word.WordMasterData.WordMasterSlotitem;
 import tdrz.update.UnitManager;
+import tdrz.update.data.word.WordMasterData.WordMasterSlotitem;
 import tdrz.update.data.word.WordSlotItem;
 import tool.function.FunctionUtils;
 
 public class SlotItemTranslator {
 	public static String getName(WordSlotItem item) {
-		if (item == null) return "";
-		return FunctionUtils.notNull(item.getMasterData(), WordMasterSlotitem::getName, "");
+		return item.getMasterData().getName();
 	}
 
 	public static int[] getType(WordSlotItem item) {
-		if (item == null) return null;
-		return FunctionUtils.notNull(item.getMasterData(), WordMasterSlotitem::getType, null);
+		return item.getMasterData().getType();
 	}
 
 	public static String getTypeString(WordSlotItem item) {
-		if (item == null) return "";
-		return FunctionUtils.notNull(item.getMasterData(), md -> Arrays.toString(md.getType()), "");
+		int category = getType(item)[2];
+		switch (category) {
+			case 1:
+				return "小口径主砲";
+			case 2:
+				return "中口径主砲";
+			case 3:
+				return "大口径主砲";
+			case 4:
+				return "副砲";
+			case 5:
+				return "魚雷";
+			case 6:
+				return "艦上戦闘機";
+			case 7:
+				return "艦上爆撃機";
+			case 8:
+				return "艦上攻撃機";
+			case 9:
+				return "艦上偵察機";
+			case 10:
+				return "水上偵察機";
+			case 11:
+				return "水上爆撃機";
+			case 12:
+				return "小型電探";
+			case 13:
+				return "大型電探";
+			case 14:
+				return "ソナー";
+			case 15:
+				return "爆雷";
+			case 16:
+				return "追加装甲";
+			case 17:
+				return "機関部強化";
+			case 18:
+				return "対空強化弾";
+			case 19:
+				return "対艦強化弾";
+			case 20:
+				return "VT信管";
+			case 21:
+				return "対空機銃";
+			case 22:
+				return "特殊潜航艇";
+			case 23:
+				return "応急修理要員";
+			case 24:
+				return "上陸用舟艇";
+			case 25:
+				return "オートジャイロ";
+			case 26:
+				return "対潜哨戒機";
+			case 27:
+				return "追加装甲(中型)";
+			case 28:
+				return "追加装甲(大型)";
+			case 29:
+				return "探照灯";
+			case 30:
+				return "簡易輸送部材";
+			case 31:
+				return "艦艇修理施設";
+			case 32:
+				return "潜水艦魚雷";
+			case 33:
+				return "照明弾";
+			case 34:
+				return "司令部施設";
+			case 35:
+				return "航空要員";
+			case 36:
+				return "高射装置";
+			case 37:
+				return "対地装備";
+			case 38:
+				return "大口径主砲(II)";
+			case 39:
+				return "水上艦要員";
+			case 40:
+				return "大型ソナー";
+			case 41:
+				return "大型飛行艇";
+			case 42:
+				return "大型探照灯";
+			case 43:
+				return "戦闘糧食";
+			case 44:
+				return "補給物資";
+			case 45:
+				return "水上戦闘機";
+			case 46:
+				return "特型内火艇";
+			case 47:
+				return "陸上攻撃機";
+			case 48:
+				return "局地戦闘機";
+			case 50:
+				return "輸送機材";
+			case 51:
+				return "潜水艦装備";
+			case 56:
+				return "噴式戦闘機";
+			case 57:
+				return "噴式戦闘爆撃機";
+			case 58:
+				return "噴式攻撃機";
+			case 59:
+				return "噴式偵察機";
+			case 93:
+				return "大型電探(II)";
+			case 94:
+				return "艦上偵察機(II)";
+			default:
+				return String.valueOf(category);
+		}
 	}
 
 	public static String getNameWithLevel(WordSlotItem item) {
-		if (item == null) return "";
 		int star = item.getLevel();
 		int alv = item.getAlv();
 		return String.format("%s%s%s", getName(item), alv > 0 ? (" 熟" + alv) : "", star > 0 ? (" ★" + star) : "");
@@ -44,7 +154,7 @@ public class SlotItemTranslator {
 	}
 
 	public static int getTaisen(WordSlotItem item) {
-		return Optional.ofNullable(item).map(WordSlotItem::getMasterData).map(WordMasterSlotitem::getTaisen).orElse(0);
+		return item.getMasterData().getTaisen();
 	}
 
 	public static int getSuodi(int id) {
@@ -53,7 +163,6 @@ public class SlotItemTranslator {
 
 	public static int getSuodi(WordSlotItem item) {
 		int suodi = 0;
-		if (item == null) return suodi;
 
 		//TODO
 
@@ -66,20 +175,20 @@ public class SlotItemTranslator {
 
 	public static int getZhikong(WordSlotItem item, int count) {
 		int zhikong = 0;
-		if (item == null) return zhikong;
 
+		//TODO 根据 type[2] 判断
 		WordMasterSlotitem msd = item.getMasterData();
 		if (msd != null) {
 			int[] type = msd.getType();
 
 			//自带对空(含改修)
-			int lv = item.getLevel();
+			int level = item.getLevel();
 			if (type[0] == 3 && type[1] == 5 && type[2] == 6 && type[3] == 6) {//舰战
-				zhikong += Math.floor((msd.getTyku() + 0.2 * lv) * Math.sqrt(count));
+				zhikong += Math.floor((msd.getTyku() + 0.2 * level) * Math.sqrt(count));
 			}
 			if (type[0] == 3 && type[1] == 5 && type[2] == 7 && type[3] == 7) {//舰爆
 				if (type[4] == 12) {//爆战
-					zhikong += Math.floor((msd.getTyku() + 0.25 * lv) * Math.sqrt(count));
+					zhikong += Math.floor((msd.getTyku() + 0.25 * level) * Math.sqrt(count));
 				} else {
 					zhikong += Math.floor(msd.getTyku() * Math.sqrt(count));
 				}
@@ -122,7 +231,6 @@ public class SlotItemTranslator {
 	}
 
 	public static boolean isRepairItem(WordSlotItem item) {
-		if (item == null) return false;
 		return item.getSlotitemId() == 86;
 	}
 

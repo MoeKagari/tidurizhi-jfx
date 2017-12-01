@@ -5,9 +5,9 @@ import java.util.Map;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import tdrz.core.util.JsonUtils;
 import tdrz.update.UnitManager;
 import tdrz.update.handler.UnitHandler;
+import tool.JsonUtils;
 
 public class ApiKaisouSlotExchange extends UnitHandler {
 	private final SlotExchange slotExchange;

@@ -44,26 +44,26 @@ import tdrz.update.handler.mission.ApiMissionStart;
 import tdrz.update.handler.ndock.ApiNdock;
 import tdrz.update.handler.ndock.ApiNdockNyukyoSpeedChange;
 import tdrz.update.handler.ndock.ApiNdockNyukyoStart;
-import tdrz.update.handler.other.ApiBasic;
-import tdrz.update.handler.other.ApiCharge;
-import tdrz.update.handler.other.ApiCombined;
-import tdrz.update.handler.other.ApiCreateSlotItem;
-import tdrz.update.handler.other.ApiDestroyShip;
-import tdrz.update.handler.other.ApiDestroySlotItem;
-import tdrz.update.handler.other.ApiEventMapRankSelect;
-import tdrz.update.handler.other.ApiGetIncentive;
-import tdrz.update.handler.other.ApiItemUse;
-import tdrz.update.handler.other.ApiMapInfo;
-import tdrz.update.handler.other.ApiMasterData;
-import tdrz.update.handler.other.ApiMaterial;
-import tdrz.update.handler.other.ApiPort;
-import tdrz.update.handler.other.ApiRecord;
-import tdrz.update.handler.other.ApiRequireInfo;
-import tdrz.update.handler.other.ApiShip2;
-import tdrz.update.handler.other.ApiSlotItem;
-import tdrz.update.handler.other.ApiSortieConditions;
-import tdrz.update.handler.other.ApiUpdateComment;
-import tdrz.update.handler.other.ApiUseItem;
+import tdrz.update.handler.other.ApiOtherBasic;
+import tdrz.update.handler.other.ApiOtherCharge;
+import tdrz.update.handler.other.ApiOtherCombined;
+import tdrz.update.handler.other.ApiOtherCreateSlotItem;
+import tdrz.update.handler.other.ApiOtherDestroyShip;
+import tdrz.update.handler.other.ApiOtherDestroySlotItem;
+import tdrz.update.handler.other.ApiOtherEventMapRankSelect;
+import tdrz.update.handler.other.ApiOtherGetIncentive;
+import tdrz.update.handler.other.ApiOtherItemUse;
+import tdrz.update.handler.other.ApiOtherMapInfo;
+import tdrz.update.handler.other.ApiOtherMasterData;
+import tdrz.update.handler.other.ApiOtherMaterial;
+import tdrz.update.handler.other.ApiOtherPort;
+import tdrz.update.handler.other.ApiOtherRecord;
+import tdrz.update.handler.other.ApiOtherRequireInfo;
+import tdrz.update.handler.other.ApiOtherShip2;
+import tdrz.update.handler.other.ApiOtherSlotItem;
+import tdrz.update.handler.other.ApiOtherSortieConditions;
+import tdrz.update.handler.other.ApiOtherUpdateComment;
+import tdrz.update.handler.other.ApiOtherUseItem;
 import tdrz.update.handler.practice.ApiPracticeChangeMatchingKind;
 import tdrz.update.handler.practice.ApiPracticeEnemyInfo;
 import tdrz.update.handler.practice.ApiPracticeList;
@@ -82,6 +82,7 @@ import tdrz.update.unit.UnitKdock.UnitHandlerKdock;
 import tdrz.update.unit.UnitMaterial.UnitHandlerMaterial;
 import tdrz.update.unit.UnitMemory.UnitHandlerMemory;
 import tdrz.update.unit.UnitNdock.UnitHandlerNdock;
+import tdrz.update.unit.UnitPractice.UnitPracticeHandler;
 import tdrz.update.unit.UnitPrint.PrintItem;
 import tdrz.update.unit.UnitPrint.UnitHandlerPrint;
 import tdrz.update.unit.UnitProperty.UnitHandlerProperty;
@@ -91,7 +92,7 @@ import tool.function.FunctionUtils;
 
 public abstract class UnitHandler implements
 		UnitHandlerWord, UnitHandlerMemory, UnitHandlerQuest, UnitHandlerBattle,
-		UnitHandlerMaterial, UnitHandlerPrint,
+		UnitHandlerMaterial, UnitHandlerPrint, UnitPracticeHandler,
 		UnitHandlerAirBase, UnitHandlerDeck, UnitHandlerKdock, UnitHandlerNdock,
 		UnitHandlerProperty, UnitHandlerAkashi {
 
@@ -225,46 +226,46 @@ public abstract class UnitHandler implements
 				return ApiPracticeEnemyInfo::new;
 
 			case CHARGE:
-				return ApiCharge::new;
+				return ApiOtherCharge::new;
 			case CREATESLOTITEM:
-				return ApiCreateSlotItem::new;
+				return ApiOtherCreateSlotItem::new;
 			case DESTROYSHIP:
-				return ApiDestroyShip::new;
+				return ApiOtherDestroyShip::new;
 			case DESTROYSLOTITEM:
-				return ApiDestroySlotItem::new;
+				return ApiOtherDestroySlotItem::new;
 
 			case COMBINED:
-				return ApiCombined::new;
+				return ApiOtherCombined::new;
 			case USEITEM:
-				return ApiUseItem::new;
+				return ApiOtherUseItem::new;
 			case ITEMUSE:
-				return ApiItemUse::new;
+				return ApiOtherItemUse::new;
 			case MASTERDATA:
-				return ApiMasterData::new;
+				return ApiOtherMasterData::new;
 			case REQUIRE_INFO:
-				return ApiRequireInfo::new;
+				return ApiOtherRequireInfo::new;
 			case MAPINFO:
-				return ApiMapInfo::new;
+				return ApiOtherMapInfo::new;
 			case MATERIAL:
-				return ApiMaterial::new;
+				return ApiOtherMaterial::new;
 			case PORT:
-				return ApiPort::new;
+				return ApiOtherPort::new;
 			case BASIC:
-				return ApiBasic::new;
+				return ApiOtherBasic::new;
 			case SLOT_ITEM:
-				return ApiSlotItem::new;
+				return ApiOtherSlotItem::new;
 			case SHIP2:
-				return ApiShip2::new;
+				return ApiOtherShip2::new;
 			case UPDATECOMMENT:
-				return ApiUpdateComment::new;
+				return ApiOtherUpdateComment::new;
 			case EVENTMAP_RANK_SELECT:
-				return ApiEventMapRankSelect::new;
+				return ApiOtherEventMapRankSelect::new;
 			case SORTIE_CONDITIONS:
-				return ApiSortieConditions::new;
+				return ApiOtherSortieConditions::new;
 			case RECORD:
-				return ApiRecord::new;
+				return ApiOtherRecord::new;
 			case GET_INCENTIVE:
-				return ApiGetIncentive::new;
+				return ApiOtherGetIncentive::new;
 
 			case UNSETSLOT:
 			case MXLTVKPYUKLH:

@@ -1,7 +1,6 @@
 package tdrz.update.data.memory.other;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import tdrz.update.data.memory.MemoryOther;
 import tdrz.update.data.word.WordSlotItem;
@@ -9,9 +8,9 @@ import tdrz.update.data.word.WordSlotItem;
 public class MemoryRemodel extends MemoryOther {
 	private static final long serialVersionUID = 1L;
 	private final long time;
-	private final boolean certain, success;
+	private final boolean certainRemodel, successRemodel;
 	private final MemoryObjSlotItem oldSlotItem, newSlotItem;
-	private final List<MemoryObjSlotItem> consumedSlotItemList;
+	private final MemoryObjSlotItem[] consumedSlotItemArray;
 	private final int[] oldMaterial, newMaterial;
 
 	public MemoryRemodel(
@@ -21,11 +20,11 @@ public class MemoryRemodel extends MemoryOther {
 			int[] oldMaterial, int[] newMaterial
 	/**/) {
 		this.time = time;
-		this.certain = certain;
-		this.success = success;
+		this.certainRemodel = certain;
+		this.successRemodel = success;
 		this.oldSlotItem = new MemoryObjSlotItem(oldSlotItem);
 		this.newSlotItem = new MemoryObjSlotItem(newSlotItem);
-		this.consumedSlotItemList = consumedSlotItemList.stream().map(MemoryObjSlotItem::new).collect(Collectors.toList());
+		this.consumedSlotItemArray = consumedSlotItemList.stream().map(MemoryObjSlotItem::new).toArray(MemoryObjSlotItem[]::new);
 		this.oldMaterial = oldMaterial;
 		this.newMaterial = newMaterial;
 	}
@@ -35,12 +34,12 @@ public class MemoryRemodel extends MemoryOther {
 		return this.time;
 	}
 
-	public boolean isCertain() {
-		return this.certain;
+	public boolean isCertainRemodel() {
+		return this.certainRemodel;
 	}
 
-	public boolean isSuccess() {
-		return this.success;
+	public boolean isSuccessRemodel() {
+		return this.successRemodel;
 	}
 
 	public MemoryObjSlotItem getOldSlotItem() {
@@ -51,8 +50,8 @@ public class MemoryRemodel extends MemoryOther {
 		return this.newSlotItem;
 	}
 
-	public List<MemoryObjSlotItem> getConsumedSlotItemList() {
-		return this.consumedSlotItemList;
+	public MemoryObjSlotItem[] getConsumedSlotItemArray() {
+		return this.consumedSlotItemArray;
 	}
 
 	public int[] getOldMaterial() {
